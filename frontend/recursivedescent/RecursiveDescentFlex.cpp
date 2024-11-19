@@ -20,7 +20,7 @@
 int64_t rd_line_no = 1;
 
 /// @brief 词法分析的token对应的字符识别
-std::string ctex;
+std::string tokenValue;
 
 /// @brief 输入源文件指针
 FILE * rd_filein;
@@ -48,7 +48,7 @@ static RDTokenType getKeywordToken(std::string id)
             return keyword.type;
         }
     }
-	// 如果不再allkeywords中，说明是标识符
+    // 如果不再allkeywords中，说明是标识符
     return RDTokenType::T_ID;
 }
 
@@ -56,9 +56,10 @@ static RDTokenType getKeywordToken(std::string id)
 /// @return  Token，值保存在rd_lval中
 int rd_flex()
 {
-    int c;
+    int c;              // 扫描的字符
+    int tokenKind = -1; // Token的值
 
-    //忽略空格
+    // 忽略空白符号，主要有空格，TAB键和换行符
     while ((c = fgetc(rd_filein)) == ' ' || c == '\t' || c == '\n') {
 
         // TODO 请支持Linux/Windows/Mac系统的行号分析
@@ -69,7 +70,7 @@ int rd_flex()
 
     // 文件结束符
     if (c == EOF) {
-        //返回文件结束符
+        // 返回文件结束符
         return RDTokenType::T_EOF;
     }
 
@@ -79,7 +80,7 @@ int rd_flex()
     if (isdigit(c)) {
 
         // 识别无符号数，这里只处理正整数或者0
-        // 0开头的整数这里也识别成了10进制整数，请注意
+        // FIXME 0开头的整数这里也识别成了10进制整数，在C语言中0开头的数字串是8进制数字
 
         rd_lval.integer_num.lineno = rd_line_no;
         rd_lval.integer_num.val = c - '0';
@@ -88,57 +89,39 @@ int rd_flex()
         while (isdigit(c = fgetc(rd_filein))) {
             rd_lval.integer_num.val = rd_lval.integer_num.val * 10 + c - '0';
         }
+
         // 存储数字的token值
-        ctex = std::to_string(rd_lval.integer_num.val);
+        tokenValue = std::to_string(rd_lval.integer_num.val);
+
         // 多读的字符回退
         ungetc(c, rd_filein);
 
-        c = RDTokenType::T_DIGIT;
-    } else if (c == '+') {
-        // 识别字符+
-        c = RDTokenType::T_ADD;
-        // 存储字符+
-        ctex = "+";
-    } else if (c == '-') {
-        // 识别字符-
-        c = RDTokenType::T_SUB;
-        // 存储字符-
-        ctex = "-";
+        tokenKind = RDTokenType::T_DIGIT;
     } else if (c == '(') {
         // 识别字符(
-        c = RDTokenType::T_L_PAREN;
+        tokenKind = RDTokenType::T_L_PAREN;
         // 存储字符(
-        ctex = "(";
+        tokenValue = "(";
     } else if (c == ')') {
         // 识别字符)
-        c = RDTokenType::T_R_PAREN;
+        tokenKind = RDTokenType::T_R_PAREN;
         // 存储字符)
-        ctex = ")";
+        tokenValue = ")";
     } else if (c == '{') {
         // 识别字符{
-        c = RDTokenType::T_L_BRACE;
+        tokenKind = RDTokenType::T_L_BRACE;
         // 存储字符{
-        ctex = "{";
+        tokenValue = "{";
     } else if (c == '}') {
         // 识别字符}
-        c = RDTokenType::T_R_BRACE;
+        tokenKind = RDTokenType::T_R_BRACE;
         // 存储字符}
-        ctex = "}";
-    } else if (c == '=') {
-        // 识别字符=
-        c = RDTokenType::T_ASSIGN;
-        // 存储字符=
-        ctex = "=";
+        tokenValue = "}";
     } else if (c == ';') {
         // 识别字符;
-        c = RDTokenType::T_SEMICOLON;
+        tokenKind = RDTokenType::T_SEMICOLON;
         // 存储字符;
-        ctex = ";";
-    } else if (c == ',') {
-        // 识别字符,
-        c = RDTokenType::T_COMMA;
-        // 存储字符,
-        ctex = ",";
+        tokenValue = ";";
     } else if (isLetterUnderLine(c)) {
         // 识别标识符，包含关键字/保留字或自定义标识符
 
@@ -150,32 +133,35 @@ int rd_flex()
             name.push_back(c);
             c = fgetc(rd_filein);
         } while (isLetterDigitalUnderLine(c));
+
         // 存储标识符
-        ctex = name;
+        tokenValue = name;
+
         // 多读的字符恢复，下次可继续读到该字符
         ungetc(c, rd_filein);
 
         // 检查是否是关键字，若是则返回对应的Token，否则返回T_ID
-        c = getKeywordToken(name);
-        if (c == RDTokenType::T_ID) {
+        tokenKind = getKeywordToken(name);
+        if (tokenKind == RDTokenType::T_ID) {
+            // 自定义标识符
 
             // 设置ID的值
             rd_lval.var_id.id = strdup(name.c_str());
 
             // 设置行号
             rd_lval.var_id.lineno = rd_line_no;
-        } else if (c == RDTokenType::T_INT) {
-            // 设置ID的值
-            rd_lval.type.type = BasicType::TYPE_INT;
+        } else if (tokenKind == RDTokenType::T_INT) {
+            // int关键字
 
-            // 设置行号
+            // 设置类型与行号
+            rd_lval.type.type = BasicType::TYPE_INT;
             rd_lval.type.lineno = rd_line_no;
         }
     } else {
-        printf("Line(%lld): Invalid char %s\n", (long long) rd_line_no, ctex.c_str());
-        c = RDTokenType::T_ERR;
+        printf("Line(%lld): Invalid char %s\n", (long long) rd_line_no, tokenValue.c_str());
+        tokenKind = RDTokenType::T_ERR;
     }
 
-    /* Return a single char. */
-    return c;
+    // Token的类别
+    return tokenKind;
 }

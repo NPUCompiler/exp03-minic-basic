@@ -151,7 +151,7 @@ Statement : T_RETURN Expr T_SEMICOLON {
 
 // 表达式文法 expr : T_DIGIT
 // 表达式目前只支持数字识别
-Expr :T_DIGIT{
+Expr :T_DIGIT {
 		$$ = ast_node::New(digit_int_attr{$1.val, $1.lineno});
 	}
     ;
