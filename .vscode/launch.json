@@ -1,0 +1,151 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "antlr-debug",
+			"request": "launch",
+			// 调试的名称，可修改
+			"name": "Debug minic Antlr4 Grammar",
+			// 文法解析的输入文件
+			"input": "tests/test2-1.c",
+			// 分析树可视化，也就是具体语法树AST
+			"visualParseTree": true,
+			// 文本输出分析树
+			"printParseTree": true,
+			// 语法的开始符号
+			"startRule": "compileUnit",
+			// 描述语法的g4文件
+			"grammar": "${workspaceFolder}/frontend/antlr4/MiniC.g4"
+		},
+		{
+			// 可采用GCC或者Clang编译器
+			"name": "Debug IR vscode-lldb",
+			"type": "lldb",
+			"request": "launch",
+			"program": "${workspaceFolder}/cmake-build-debug/minic",
+			"args": ["-S", "-I", "-D", "-o", "tests/test2-2.ir", "tests/test2-2.c"],
+			"cwd": "${workspaceFolder}",
+			// 不需要编译时可注释掉
+			"preLaunchTask": "CMake: build"
+		},
+		{
+			// 可采用GCC或者Clang编译器
+			"name": "Debug IR",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/cmake-build-debug/minic",
+			"args": ["-S", "-D", "-I", "-o", "tests/test2-2.ir", "tests/test2-2.c"],
+			// 程序的入口（main函数的入口）是否停止
+			"stopAtEntry": true,
+			"cwd": "${workspaceFolder}",
+			"environment": [],
+			"externalConsole": false,
+			// 根据需要修改修改目标架构，这里假定amd64
+			"targetArchitecture": "amd64",
+			"linux": {
+				"MIMode": "gdb",
+				"miDebuggerPath": "/usr/bin/gdb"
+			},
+			"osx": {
+				"MIMode": "lldb"
+			},
+			"windows": {
+				"MIMode": "gdb"
+			},
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"description": "Set Disassembly Flavor to Intel",
+					"text": "-gdb-set disassembly-flavor intel",
+					"ignoreFailures": true
+				}
+			],
+			// 不需要编译时可注释掉
+			"preLaunchTask": "CMake: build"
+		},
+		{
+			// 可采用GCC或者Clang编译器
+			"name": "Debug AST",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/cmake-build-debug/minic",
+			"args": ["-S", "-A", "-T", "tests/test2-1.c"],
+			// 程序的入口（main函数的入口）是否停止
+			"stopAtEntry": true,
+			"cwd": "${workspaceFolder}",
+			"environment": [],
+			"externalConsole": false,
+			// 根据需要修改修改目标架构，这里假定amd64
+			// "targetArchitecture": "amd64",
+			"linux": {
+				"MIMode": "gdb",
+				"miDebuggerPath": "/usr/bin/gdb"
+			},
+			"osx": {
+				"MIMode": "lldb"
+			},
+			"windows": {
+				"MIMode": "gdb"
+			},
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				},
+				{
+					"description": "Set Disassembly Flavor to Intel",
+					"text": "-gdb-set disassembly-flavor intel",
+					"ignoreFailures": true
+				}
+			],
+			// 不需要编译时可注释掉
+			"preLaunchTask": "CMake: build"
+		},
+		{
+			// 可采用GCC或者Clang编译器
+			"name": "Debug Backend ARM32",
+			"type": "lldb",
+			"request": "launch",
+			"program": "${workspaceFolder}/cmake-build-debug/minic",
+			"args": ["-S", "-A", "-o", "tests/test2-2.s", "tests/test2-2.c"],
+			"cwd": "${workspaceFolder}",
+			// 不需要编译时可注释掉
+			"preLaunchTask": "CMake: build"
+		},
+		{
+			"name": "Qemu Debug ARM32",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/tests/test2-2",
+			"args": [],
+			// 程序的入口（main函数的入口）是否停止
+			"stopAtEntry": true,
+			"cwd": "${workspaceFolder}",
+			"miDebuggerServerAddress": "localhost:1234",
+			"miDebuggerPath": "/usr/bin/gdb-multiarch",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"setupCommands": [
+				{
+					"description": "pretty printing",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				}
+			],
+			"logging": {
+				"engineLogging": true,
+				"programOutput": true
+			},
+			"preLaunchTask": "build and qemu run"
+		}
+	]
+}

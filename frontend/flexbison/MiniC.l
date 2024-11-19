@@ -1,0 +1,90 @@
+%{
+/* 这里声明语义动作符程序所需要的函数原型或者变量原型或定义等 */
+/* 主要包含头文件，extern的全局变量，定义的全局变量等 */
+
+#include <cstdio>
+#include <cstdint>
+#include <cstring>
+
+// 此文件定义了文法中终结符的类别
+#include "BisonParser.h"
+
+// 对于整数或浮点数，词法识别无符号数，对于负数，识别为求负运算符与无符号数，请注意。
+%}
+
+/* 使它不要添加默认的规则,这样输入无法被给定的规则完全匹配时，词法分析器可以报告一个错误 */
+%option nodefault
+
+/* 产生yywrap函数 */
+%option noyywrap
+
+/* flex 生成的扫描器用全局变量yylineno 维护着输入文件的当前行编号 */
+%option yylineno
+
+/* 区分大小写 */
+%option case-sensitive
+
+/* yytext的类型为指针类型，即char * */
+%option pointer
+
+/* 生成可重用的扫描器API，这些API用于多线程环境 */
+/* %option reentrant */
+
+/* 不进行命令行交互，只能分析文件 */
+%option never-interactive
+
+%x COMMENT
+/* 辅助定义式或者宏，后面使用时带上大括号 */
+
+d			[0-9]
+l           [a-zA-Z]
+white		[\t\040]
+white_line  [\r\n]
+
+/* 正规式定义 */
+%%
+
+"("			{return T_L_PAREN;}
+")"			{return T_R_PAREN;}
+
+";"         {return T_SEMICOLON;}
+
+"{"         {return T_L_BRACE;}
+"}"         {return T_R_BRACE; }
+
+"0"|[1-9][0-9]*	{
+                // 词法识别无符号整数，注意对于负数，则需要识别为负号和无符号数两个Token
+                yylval.integer_num.val = (uint32_t)strtol(yytext, (char **)NULL, 10);
+                yylval.integer_num.lineno = yylineno;
+                return T_DIGIT;
+            }
+
+"int"       {
+                // int类型关键字 关键字的识别要在标识符的前边。
+                yylval.type.type = BasicType::TYPE_INT;
+                yylval.type.lineno = yylineno;
+                return T_INT;
+            }
+
+"return"    {
+                // return关键字 关键字的识别要在标识符的前边。
+                return T_RETURN;
+            }
+
+{l}+({d}|{l})* {
+				// strdup 分配的空间需要用户使用free手动释放
+                yylval.var_id.id = strdup(yytext);
+                yylval.var_id.lineno = yylineno;
+                return T_ID;
+            }
+
+{white}+	 ;
+
+{white_line}+ ;
+
+.			{
+                printf("Line %d: Invalid char %s\n", yylineno, yytext);
+                // 词法识别错误
+                return 257;
+            }
+%%

@@ -1,0 +1,59 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cmake",
+			"label": "CMake: build",
+			"command": "build",
+			"targets": ["all"],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [],
+			"detail": "CMake template build task",
+			"dependsOn": ["CMake: configure"]
+		},
+
+		{
+			"type": "cmake",
+			"label": "CMake: configure",
+			"command": "configure",
+			"problemMatcher": [],
+			"detail": "CMake template configure task"
+		},
+
+		{
+			"type": "cmake",
+			"label": "CMake: rebuild",
+			"command": "cleanRebuild",
+			"problemMatcher": [],
+			"detail": "CMake template configure task"
+		},
+		{
+			"type": "shell",
+			"label": "build and qemu run",
+			"command": "${workspaceFolder}/tools/arm32-build-gdb.sh",
+			"args": ["${workspaceFolder}", "test2-2"],
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": ".",
+							"file": 1,
+							"location": 2,
+							"message": 3
+						}
+					],
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "Now run gdb in another window.",
+						"endsPattern": "Now gdb start"
+					}
+				}
+			],
+			"dependsOn": ["CMake: build"]
+		}
+	]
+}

@@ -1,0 +1,144 @@
+# 工具 https://github.com/mapbox/XcodeClangFormat(需要添加签名使用)
+# 函数名详细地址 英文 http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# 函数名详细地址 中文 https://www.cnblogs.com/PaulpauL/p/5929753.html
+# 语言: None, Cpp, Java, JavaScript, ObjC, Proto, TableGen, TextProto
+Language: Cpp
+BasedOnStyle: LLVM
+# 访问说明符(public、private等)的偏移
+AccessModifierOffset: -4
+# 开括号(开圆括号、开尖括号、开方括号)后的对齐: Align, DontAlign, AlwaysBreak(总是在开括号后换行)
+AlignAfterOpenBracket: Align
+# 对齐注释
+AlignTrailingComments: true
+# 赋值=对齐
+AlignConsecutiveAssignments: false
+# 声明参数对齐
+AlignConsecutiveDeclarations: false
+# 换行的时候对齐操作符
+AlignOperands: true
+# 允许下一行的所有参数
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+# 允许函数声明的所有参数在放在下一行
+AllowAllParametersOfDeclarationOnNextLine: false
+# 允许将简单的语句块放到同一行
+AllowShortBlocksOnASingleLine: false
+# 允许case在同一行
+AllowShortCaseLabelsOnASingleLine: false
+# 允许短的函数放在同一行
+AllowShortFunctionsOnASingleLine: false
+# 允许if在同一行
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: All
+# 允许while在同一行
+AllowShortLoopsOnASingleLine: false
+# 总是在返回类型后换行
+AlwaysBreakAfterReturnType: None
+# 总是在template声明后换行
+AlwaysBreakTemplateDeclarations: Yes
+BreakBeforeBraces: Custom
+# 大括号换行，只有BreakBeforeBraces为Custom时有效
+BraceWrapping:
+  # class定义后面
+  AfterClass: false
+  # 控制语句后面
+  AfterControlStatement: Never
+  # enum定义后面
+  AfterEnum: false
+  # 函数定义后面
+  AfterFunction: true
+  # 命名空间定义后面
+  AfterNamespace: false
+  # struct定义后面
+  AfterStruct: false
+  # union定义后面
+  AfterUnion: false
+  # catch之前
+  BeforeCatch: false
+  AfterCaseLabel: false
+  BeforeElse: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: true
+# 运算符位置
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeColon
+BreakInheritanceList: BeforeColon
+ColumnLimit: 120
+CompactNamespaces: false
+ContinuationIndentWidth: 4
+IndentCaseLabels: true
+IndentPPDirectives: None
+IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: true
+# 连续的空行保留几行
+MaxEmptyLinesToKeep: 1
+# 命名空间的缩进
+NamespaceIndentation: All
+ObjCSpaceAfterProperty: false
+ObjCSpaceBeforeProtocolList: true
+# 指针的对齐: Left, Right, Middle
+PointerAlignment: Middle
+# 缩进预处理器语句的列数
+# PPIndentWidth: -1
+# 引用的对齐
+# ReferenceAlignment: Pointer
+# 允许重新排版注释
+ReflowComments: true
+# 在C风格类型转换后添加空格
+SpaceAfterCStyleCast: true
+# 在!后添加空格
+SpaceAfterLogicalNot: false
+# 在Template关键字后添加空格
+SpaceAfterTemplateKeyword: true
+# 赋值运算符前加空格
+SpaceBeforeAssignmentOperators: true
+# 不在C++11大括号列表之前添加空格
+SpaceBeforeCpp11BracedList: false
+# 在构造函数初始化器冒号之前添加空格
+SpaceBeforeCtorInitializerColon: true
+# 在继承冒号前添加空格
+SpaceBeforeInheritanceColon: true
+# 开圆括号之前添加一个空格: Never, ControlStatements, Always
+SpaceBeforeParens: ControlStatements
+# 在基于范围的for循环冒号之前添加空格
+SpaceBeforeRangeBasedForLoopColon: false
+# {}中间不添加空格
+SpaceInEmptyBlock: false
+# 在空括号中加空格
+SpaceInEmptyParentheses: false
+# 在尾随的评论前添加的空格数(只适用于//)
+SpacesBeforeTrailingComments: 1
+# 在<>中间插入空格
+SpacesInAngles: false
+# 不在if/for/switch/while条件周围插入空格
+SpacesInConditionalStatement: false
+# 在C风格类型转换的括号中添加空格
+SpacesInCStyleCastParentheses: false
+# 容器类前添加空格
+SpacesInContainerLiterals: false
+# 行注释开头允许有多少个空格。要禁用最大值，请将其设置为-1，除此之外，最大值优先于最小值
+# SpacesInLineCommentPrefix:
+#  Minimum: 1
+#  Maximum: -1
+# ()中添加空格
+SpacesInParentheses: false
+# []中添加空格
+SpacesInSquareBrackets: false
+# 不在[前添加空格
+SpaceBeforeSquareBrackets: false
+# 位域:每边都添加空格
+# BitFieldColonSpacing: Before
+# Tab宽度
+TabWidth: 4
+# 使用\n换行
+UseCRLF: false
+# 使用tab字符：ForIndentation——仅将制表符用于缩进
+UseTab: false
+# include文件名排序
+SortIncludes: false
+# 形参 如果为false要么都在同一行，要么各有一行
+BinPackParameters: false
+# 实参 如果为false要么都在同一行，要么各有一行
+BinPackArguments: false

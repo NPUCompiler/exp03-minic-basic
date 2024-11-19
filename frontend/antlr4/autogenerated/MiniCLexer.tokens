@@ -1,0 +1,17 @@
+T_L_PAREN=1
+T_R_PAREN=2
+T_SEMICOLON=3
+T_L_BRACE=4
+T_R_BRACE=5
+T_RETURN=6
+T_INT=7
+T_ID=8
+T_DIGIT=9
+WS=10
+'('=1
+')'=2
+';'=3
+'{'=4
+'}'=5
+'return'=6
+'int'=7

@@ -1,0 +1,348 @@
+{
+	"tabnine.experimentalAutoImports": true,
+	"editor.fontFamily": "'FiraCode NFM',monospace,'Courier New',Menlo,Monaco",
+	"editor.fontLigatures": true,
+	"editor.linkedEditing": true,
+	"editor.formatOnType": true,
+	"editor.tabSize": 4,
+	"editor.formatOnPaste": true,
+	"editor.fontVariations": false,
+	"editor.detectIndentation": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"git.enableSmartCommit": true,
+	"git.confirmSync": false,
+	"git.autofetch": true,
+	"git.ignoreLimitWarning": true,
+	"gitlens.hovers.currentLine.over": "line",
+	"gitlens.defaultDateFormat": null,
+	"gitlens.graph.layout": "editor",
+	"gitlens.gitCommands.skipConfirmations": ["fetch:command", "switch:command", "push:command"],
+	"workbench.iconTheme": "material-icon-theme",
+	"workbench.colorTheme": "Monokai",
+	"plantuml.server": "http://10.69.45.39:38880",
+	"plantuml.render": "PlantUMLServer",
+	"workbench.editorAssociations": {
+		"*.ipynb": "jupyter-notebook",
+		"*.pdf": "latex-workshop-pdf-hook"
+	},
+	"vsicons.dontShowNewVersionMessage": true,
+	"todo-tree.general.tags": ["BUG", "HACK", "FIXME", "TODO", "XXX", "[ ]", "[x]"],
+	"todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^\\s*(-|\\d+.))\\s*($TAGS)",
+	"go.useLanguageServer": true,
+	"go.toolsManagement.autoUpdate": true,
+	"[go]": {
+		"editor.snippetSuggestions": "none",
+		"editor.formatOnSave": true,
+		"editor.codeActionsOnSave": {
+			"source.organizeImports": "explicit"
+		}
+	},
+	"gopls": {
+		"usePlaceholders": true,
+		"completionDocumentation": true
+	},
+	"cmake.buildDirectory": "${workspaceFolder}/cmake-build-debug",
+	"cmake.configureOnOpen": false,
+	"cmake.generator": "Ninja",
+	"debug.allowBreakpointsEverywhere": true,
+	"security.workspace.trust.untrustedFiles": "open",
+	"latex-workshop.latex.recipes": [
+		{
+			"name": "xelatex",
+			"tools": ["xelatex"]
+		},
+		{
+			"name": "xelatex -> bibtex -> xelatex*2",
+			"tools": ["xelatex", "bibtex", "xelatex", "xelatex"]
+		}
+	],
+	"latex-workshop.latex.tools": [
+		{
+			"name": "latexmk",
+			"command": "latexmk",
+			"args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "-pdf", "%DOC%"]
+		},
+		{
+			"name": "xelatex",
+			"command": "xelatex",
+			"args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%"]
+		},
+		{
+			"name": "bibtex",
+			"command": "bibtex",
+			"args": ["%DOCFILE%"]
+		}
+	],
+	"latex-workshop.latex.clean.fileTypes": [
+		"*.aux",
+		"*.bbl",
+		"*.blg",
+		"*.idx",
+		"*.ind",
+		"*.lof",
+		"*.lot",
+		"*.out",
+		"*.toc",
+		"*.acn",
+		"*.acr",
+		"*.alg",
+		"*.glg",
+		"*.glo",
+		"*.gls",
+		"*.ist",
+		"*.fls",
+		"*.log",
+		"*.fdb_latexmk",
+		"*.synctex.gz"
+	],
+	"docker.contexts.label": "DockerEndpoint",
+	"[python]": {
+		"editor.tabSize": 4
+	},
+	"explorer.confirmDelete": false,
+	"?terminal.integrated.profiles.windows": "TODO: 请根据真实的路径修改clang64的路径",
+	"terminal.integrated.profiles.windows": {
+		"clang64": {
+			"path": "C:/LinuxEnv/msys64/msys2_shell.cmd",
+			"args": ["-defterm", "-clang64", "-no-start", "-here", "-shell", "zsh"]
+		},
+		"mingw64": {
+			"path": "C:/LinuxEnv/msys64/msys2_shell.cmd",
+			"args": ["-defterm", "-mingw64", "-no-start", "-here", "-shell", "zsh"]
+		},
+		"PowerShell": {
+			"source": "PowerShell",
+			"icon": "terminal-powershell"
+		},
+		"Command Prompt": {
+			"path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"],
+			"args": [],
+			"icon": "terminal-cmd"
+		}
+	},
+	"terminal.integrated.defaultProfile.windows": "Command Prompt",
+	"terminal.integrated.enableMultiLinePasteWarning": "auto",
+	"terminal.external.osxExec": "iTerm.app",
+	"terminal.integrated.defaultProfile.osx": "zsh",
+	"terminal.integrated.fontSize": 14,
+	"lldb.suppressUpdateNotifications": true,
+	"diffEditor.ignoreTrimWhitespace": false,
+	"update.showReleaseNotes": false,
+	"[vue]": {
+		"editor.defaultFormatter": "Vue.volar",
+		"editor.tabSize": 2
+	},
+	"eslint.quiet": true,
+	"eslint.workingDirectories": [
+		".eslintrc.js",
+		{
+			"mode": "auto"
+		}
+	],
+	"eslint.validate": ["javascript", "javascriptreact", "vue"],
+	"vetur.validation.template": false,
+	"vetur.ignoreProjectWarning": true,
+	"vetur.format.defaultFormatter.js": "vscode-typescript",
+	"vetur.format.defaultFormatter.html": "js-beautify-html",
+	"vetur.format.defaultFormatterOptions": {
+		"js-beautify-html": {
+			"wrap_line_length": 80,
+			"wrap_attributes": "force-aligned"
+		}
+	},
+	"typescript.preferences.quoteStyle": "single",
+	"typescript.format.insertSpaceAfterConstructor": true,
+	"typescript.format.insertSpaceBeforeFunctionParenthesis": true,
+	"[typescript]": {
+		"editor.tabSize": 2
+	},
+	"[json]": {
+		"editor.tabSize": 2,
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
+	"[css]": {
+		"editor.tabSize": 2
+	},
+	"javascript.preferences.quoteStyle": "single",
+	"javascript.format.insertSpaceAfterConstructor": true,
+	"javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+	"[javascript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features",
+		"editor.tabSize": 2
+	},
+	"html.format.wrapAttributes": "force-expand-multiline",
+	"[html]": {
+		"editor.tabSize": 2
+	},
+	"prettier.vueIndentScriptAndStyle": true,
+	"prettier.semi": true,
+	"prettier.singleQuote": true,
+	"prettier.useTabs": true,
+	"prettier.printWidth": 100,
+	"git.openRepositoryInParentFolders": "always",
+	"cmake.options.statusBarVisibility": "visible",
+	"cmake.options.advanced": {
+		"build": {
+			"statusBarVisibility": "visible"
+		},
+		"launch": {
+			"statusBarVisibility": "visible"
+		},
+		"debug": {
+			"statusBarVisibility": "visible"
+		}
+	},
+	"cmake.showOptionsMovedNotification": false,
+	"editor.insertSpaces": false,
+	"editor.formatOnSave": true,
+	"python.languageServer": "Pylance",
+	"clang-format.executable": "clang-format",
+	"clang-format.style": "file",
+	"clang-format.fallbackStyle": "LLVM",
+	"[cpp]": {
+		"editor.defaultFormatter": "xaver.clang-format"
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"markdown.copyFiles.destination": {
+		"*.md": "figs/${documentBaseName}-${fileName}"
+	},
+	"markdown-preview-enhanced.codeBlockTheme": "github-dark.css",
+	"markdown-preview-enhanced.previewTheme": "one-dark.css",
+	"markdown-preview-enhanced.imageFolderPath": "/figs",
+	"markdownlint.focusMode": false,
+	"markdownlint.run": "onType",
+	"editor.fontSize": 16,
+	"editor.guides.bracketPairs": true,
+	"C_Cpp.codeAnalysis.clangTidy.enabled": true,
+	"markdownlint.ignore": [".clang-tidy", ".clang-format", "settings.json"],
+	"antlr4.generation": {
+		"mode": "internal",
+		"listeners": false,
+		"visitors": true
+	},
+	"?cmake.languageSupport.dotnetPath": "请根据操作系统的种类进行修改,Linux：/usr/bin/dotnet,Mac：/usr/local/opt/dotnet@6/bin/dotnet,Windows：C:/Program Files/dotnet/dotnet.exe",
+	"cmake.languageSupport.dotnetPath": "/usr/bin/dotnet",
+	// 配置 CMake 构建环境变量，使其生成编译命令数据库，在CMakeLists.txt已经开启，这里就不用了
+	// "cmake.buildEnvironment": {
+	// 	"CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+	// },
+	"workbench.editor.enablePreview": false,
+	"C_Cpp.intelliSenseEngine": "disabled",
+	"clangd.serverCompletionRanking": true,
+	"clangd.arguments": [
+		// 在后台自动分析文件（基于complie_commands)
+		"--background-index",
+		// 标记compelie_commands.json文件的目录位置
+		"--compile-commands-dir=${workspaceFolder}/cmake-build-debug",
+		// 同时开启的任务数量
+		"-j=4",
+		// clang-tidy功能
+		"--clang-tidy",
+		// 全局补全（会自动补充头文件）
+		"--all-scopes-completion",
+		// 详细补全
+		"--completion-style=detailed",
+		// 补充头文件
+		"--header-insertion=iwyu"
+		// pch优化的位置，如果内存足够可观注释掉这个选项
+		// "--pch-storage=disk"
+	],
+	// 作为编译失败的备选标志，指定了包含文件夹的路径
+	"clangd.fallbackFlags": [
+		"-I${workspaceFolder}/common",
+		"-I${workspaceFolder}/DragonIR",
+		"-I${workspaceFolder}/frontend",
+		"-I${workspaceFolder}/frontend/antlr4",
+		"-I${workspaceFolder}/frontend/flexbison",
+		"-I${workspaceFolder}/frontend/recursivedescent",
+		"-I${workspaceFolder}/backend",
+		"-I${workspaceFolder}/backend/arm32",
+		"-I${workspaceFolder}/utils"
+	],
+
+	"files.autoSave": "afterDelay",
+
+	// Doxygen documentation generator set
+	// Doxygen comment trigger. This character sequence triggers generation of Doxygen comments.
+	"doxdocgen.c.triggerSequence": "///",
+
+	"doxdocgen.c.firstLine": "///",
+
+	// The last line of the comment that gets generated. If empty it won't get generated at all.
+	"doxdocgen.c.lastLine": "///",
+
+	// The prefix that is used for each comment line except for first and last.
+	"doxdocgen.c.commentPrefix": "/// ",
+
+	// Smart text snippet for getters.
+	"doxdocgen.c.getterText": "Get the {name} object",
+
+	// Smart text snippet for setters.
+	"doxdocgen.c.setterText": "Set the {name} object",
+
+	// Smart text snippet for constructors.
+	"doxdocgen.cpp.ctorText": "Construct a new {name} object",
+
+	// Smart text snippet for destructors.
+	"doxdocgen.cpp.dtorText": "Destroy the {name} object",
+
+	// The template of the template parameter Doxygen line(s) that are generated. If empty it won't get generated at all.
+	"doxdocgen.cpp.tparamTemplate": "@tparam {param} ",
+
+	// 文件注释：版权信息模板
+	"doxdocgen.file.copyrightTag": ["@copyright Copyright (c) {year}"],
+	// 文件注释：自定义模块，这里我添加一个修改日志
+	"doxdocgen.file.customTag": [
+		"@par 修改日志:",
+		"<table>",
+		"<tr><th>Date       <th>Version <th>Author  <th>Description",
+		"<tr><td>{date} <td>1.0     <td>zenglj  <td>内容",
+		"</table>"
+	],
+	// 文件注释的组成及其排序
+	"doxdocgen.file.fileOrder": [
+		"file", // @file
+		"brief", // @brief 简介
+		"author", // 作者
+		"version", // 版本
+		"date", // 日期
+		"empty", // 空行
+		"copyright", // 版权
+		"empty",
+		"custom" // 自定义
+	],
+	// 下面时设置上面标签tag的具体信息
+	"doxdocgen.file.fileTemplate": "@file {name}",
+	"doxdocgen.file.versionTag": "@version 1.0",
+	"doxdocgen.generic.authorEmail": "zenglj@live.com",
+	"doxdocgen.generic.authorName": "zenglj",
+	"doxdocgen.generic.authorTag": "@author {author} ({email})",
+	// 日期格式与模板
+	"doxdocgen.generic.dateFormat": "YYYY-MM-DD",
+	"doxdocgen.generic.dateTemplate": "@date {date}",
+
+	// 根据自动生成的注释模板（目前主要体现在函数注释上）
+	"doxdocgen.generic.order": ["brief", "tparam", "param", "return"],
+	"doxdocgen.generic.paramTemplate": "@param {param} ",
+	"doxdocgen.generic.returnTemplate": "@return {type} ",
+	// Substitute {author} with git config --get user.name.
+	"doxdocgen.generic.useGitUserName": true,
+	// Substitute {email} with git config --get user.email.
+	"doxdocgen.generic.useGitUserEmail": true,
+	"doxdocgen.generic.splitCasingSmartText": true,
+
+	"VSCodeCounter.useGitignore": true,
+	"VSCodeCounter.useFilesExclude": true,
+	"VSCodeCounter.exclude": [
+		"**/.gitignore",
+		"**/.vscode/**",
+		"**/node_modules/**",
+		"**/frontend/antlr4/autogenerated/**",
+		"**/frontend/flexbison/autogenerated/**",
+		"**/utils/getopt-port*"
+	]
+}
