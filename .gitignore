@@ -6,8 +6,8 @@ cmake-build-*/
 build/
 
 # 忽略doxygen产生的文件夹
-html/
-latex/
+doc/html/
+doc/latex/
 
 # antlr插件安装后会自动产生文件夹，忽略
 .antlr/
