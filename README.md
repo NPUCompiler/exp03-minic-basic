@@ -28,6 +28,7 @@ minic -S [-A | -D] [-T | -I] [-o output] [-O level] [-t cpu] source
 
 ## 源代码构成
 
+```text
 ├── CMake
 ├── backend                     编译器后端
 │   └── arm32                   ARM32后端
@@ -54,6 +55,7 @@ minic -S [-A | -D] [-T | -I] [-o output] [-O level] [-t cpu] source
 │   │       └── Ubuntu-22.04    Ubuntu-22.04下的工具
 │   └── pictures                相关图片
 └── utils                       集合、位图等共同的代码
+```
 
 ## 程序构建
 
