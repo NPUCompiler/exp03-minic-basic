@@ -24,8 +24,15 @@ static int errno_num = 0;
 // 语法分析过程中的LookAhead，指向下一个Token
 static RDTokenType lookaheadTag = RDTokenType::T_EMPTY;
 
-// 定义两个宏，用于判断是否是对应的Token
+///
+/// @brief 继续检查LookAhead指向的记号是否是T，用于符号的FIRST集合或Follow集合判断
+///
 #define _(T) || (lookaheadTag == T)
+
+///
+/// @brief 第一个检查LookAhead指向的记号是否属于C，用于符号的FIRST集合或Follow集合判断
+/// 如判断是否是T_ID，或者T_INT，可结合F和_两个宏来实现，即F(T_ID) _(T_INT)
+///
 #define F(C) (lookaheadTag == C)
 
 ///
@@ -77,8 +84,10 @@ static void semerror(const char * format, ...)
     errno_num++;
 }
 
-/// @brief 表达式文法 expr : T_DIGIT
+///
+/// @brief 表达式文法 expr : T_DIGIT的识别，目前只识别无符号整数
 /// @return AST的节点
+///
 static ast_node * expr()
 {
     if (F(T_DIGIT)) {
@@ -95,71 +104,8 @@ static ast_node * expr()
     return nullptr;
 }
 
-/// @brief returnStatement -> T_RETURN expr T_SEMICOLON
-/// @return AST的节点
-static ast_node * returnStatement()
-{
-    if (match(T_RETURN)) {
-
-        // 匹配成功return关键字并移动到下一个字符
-
-        ast_node * expr_node = expr();
-
-        if (!match(T_SEMICOLON)) {
-            // 返回语句后没有分号
-            semerror("返回语句后没有分号");
-        }
-
-        return ast_node::New(ast_operator_type::AST_OP_RETURN, expr_node, nullptr);
-    }
-
-    // 语法失败返回空节点，不可能，因为外部已判断T_RETURN
-    return nullptr;
-}
-
-/// 识别表达式尾部符号，文法： assignExprStmtTail : T_ASSIGN expr | ε
-static ast_node * assignExprStmtTail(ast_node * left_node)
-{
-    if (match(T_ASSIGN)) {
-
-        // 赋值运算符，说明含有赋值运算
-
-        // 必须要求左侧节点必须存在
-        if (!left_node) {
-
-            // 没有左侧节点，则语法错误
-            semerror("赋值语句的左侧表达式不能为空");
-
-            return nullptr;
-        }
-
-        // 赋值运算符右侧表达式分析识别
-        ast_node * right_node = expr();
-
-        return create_contain_node(ast_operator_type::AST_OP_ASSIGN, left_node, right_node);
-    } else if (F(T_SEMICOLON)) {
-        // 看是否满足assignExprStmtTail的Follow集合。在Follow集合中则正常结束，否则出错
-        // 空语句
-    }
-
-    return left_node;
-}
-
 ///
-/// @brief 赋值语句或表达式语句识别，文法：assignExprStmt : expr assignExprStmtTail
-/// @return ast_node*
-///
-static ast_node * assignExprStmt()
-{
-    // 识别表达式，目前还不知道是否是表达式语句或赋值语句
-    ast_node * expr_node = expr();
-
-    return assignExprStmtTail(expr_node);
-}
-
-///
-/// @brief 语句的识别，其文法为：
-/// statement:T_RETURN expr T_SEMICOLON
+/// @brief 语句的识别，其文法为：statement -> T_RETURN expr T_SEMICOLON
 /// @return AST的节点
 ///
 static ast_node * statement()
@@ -167,7 +113,8 @@ static ast_node * statement()
 
     if (match(T_RETURN)) {
 
-        // 匹配成功return关键字并移动到下一个字符
+        // return语句的First集合元素为T_RETURN
+        // 若匹配，则说明是return语句
 
         ast_node * expr_node = expr();
 
@@ -184,93 +131,17 @@ static ast_node * statement()
 }
 
 ///
-/// @brief 变量定义列表语法识别 其文法：varDeclList : T_COMMA T_ID varDeclList | T_SEMICOLON
-/// @param vardeclstmt_node 变量声明语句节点，所有的变量节点应该加到该节点中
+/// @brief 块中的项目识别，其文法为：blockItem -> statement
+/// @return AST的节点
 ///
-static void varDeclList(ast_node * vardeclstmt_node)
-{
-    if (match(T_COMMA)) {
-
-        // 匹配成功，定义列表中有逗号
-
-        // 检查是否是标识符
-        if (F(T_ID)) {
-
-            // 定义列表中定义的变量
-
-            // 新建变量声明节点并加入变量声明语句中
-            (void) add_var_decl_node(vardeclstmt_node, rd_lval.var_id);
-
-            // 填过当前的Token，指向下一个Token
-            advance();
-
-            // 递归调用，不断追加变量定义
-            varDeclList(vardeclstmt_node);
-        } else {
-            semerror("逗号后必须是标识符");
-        }
-    } else if (match(T_SEMICOLON)) {
-        // 匹配成功，则说明只有前面的一个变量或者变量定义，正常结束
-    } else {
-        semerror("非法记号: %d", (int) lookaheadTag);
-
-        // 忽略该记号，继续检查
-        advance();
-
-        // 继续检查后续的变量
-        varDeclList(vardeclstmt_node);
-    }
-}
-
-///
-/// @brief 局部变量的识别，其文法为：
-/// varDecl : T_INT T_ID varDeclList
-///
-/// @return ast_node* 局部变量声明节点
-///
-static ast_node * localVarDecl()
-{
-    if (F(T_INT)) {
-
-        // 这里必须复制，而不能引用，因为rd_lval为全局，下一个记号识别后要被覆盖
-        type_attr type = rd_lval.type;
-
-        // 跳过int类型的记号，指向下一个Token
-        advance();
-
-        // 检测是否是标识符
-        if (F(T_ID)) {
-
-            // 创建变量声明语句，并加入第一个变量
-            ast_node * stmt_node = create_var_decl_stmt_node(type, rd_lval.var_id);
-
-            // 跳过标识符记号，指向下一个Token
-            advance();
-
-            varDeclList(stmt_node);
-
-            return stmt_node;
-
-        } else {
-            semerror("类型后要求的记号为标识符");
-            // 这里忽略继续检查下一个记号，为便于一次可检查出多个错误
-            // 当然可以直接退出循环，一旦有错就不再检查语法错误。
-        }
-    }
-
-    return nullptr;
-}
-
-///
-/// @brief 块中的项目识别，其文法为：
-/// blockItem: statement
 static ast_node * BlockItem()
 {
     return statement();
 }
 
 ///
-/// @brief 块语句列表分析识别，文法为BlockItemList : BlockItem+
+/// @brief 块内语句列表识别，文法为BlockItemList : BlockItem+
+/// @return AST的节点
 ///
 static void BlockItemList(ast_node * blockNode)
 {
@@ -293,7 +164,8 @@ static void BlockItemList(ast_node * blockNode)
 }
 
 ///
-/// @brief 语句块识别，文法：T_L_BRACE BlockItemList? T_R_BRACE
+/// @brief 语句块识别，文法：Block -> T_L_BRACE BlockItemList? T_R_BRACE
+/// @return AST的节点
 ///
 static ast_node * Block()
 {
@@ -307,7 +179,7 @@ static ast_node * Block()
             return blockNode;
         }
 
-        // 遍历是否有语句定义？如有则追加
+        // 块内语句列表识别
         BlockItemList(blockNode);
 
         // 没有匹配左大括号，则语法错误
@@ -324,8 +196,7 @@ static ast_node * Block()
 }
 
 ///
-/// @brief 函数定义的识别
-/// 函数定义的文法： funcDef: T_INT T_ID T_L_PAREN T_R_PAREN block
+/// @brief 函数定义的识别，其文法为： funcDef -> T_INT T_ID T_L_PAREN T_R_PAREN block
 /// @return ast_node 函数运算符节点
 ///
 static ast_node * funcDef()
@@ -368,17 +239,22 @@ static ast_node * funcDef()
                 }
 
             } else {
+
                 semerror("函数定义缺少左小括号");
             }
+        } else {
+            semerror("函数返回值类型后缺少函数名标识符");
         }
     }
 
     return nullptr;
 }
 
-// 编译单元识别，也就是文法的开始符号
-// 其文法（antlr4中定义的）：
-// compileUnit: funcDef EOF
+///
+/// @brief 编译单元识别（C语言文件），其文法为：compileUnit -> funcDef EOF
+/// compileUnit是文法的开始符号
+/// @return ast_node* 抽象语法树根节点
+///
 static ast_node * compileUnit()
 {
     // 创建AST的根节点，编译单元运算符
