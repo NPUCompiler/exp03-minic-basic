@@ -17,7 +17,6 @@
 #include <cstdio>
 #include <unordered_map>
 #include <vector>
-#include <iostream>
 
 #include "AST.h"
 #include "Common.h"

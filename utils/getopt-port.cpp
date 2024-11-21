@@ -1,13 +1,18 @@
-/**
- * @file getopt-port.cpp
- * @author zenglj (zenglj@nwpu.edu.cn)
- * @brief 没有getopt函数时getopt新作处理
- * @version 0.1
- * @date 2023-09-24
- *
- * @copyright Copyright (c) 2023
- *
- */
+///
+/// @file getopt-port.cpp
+/// @brief getopt函数的多平台支持实现
+/// @author zenglj (zenglj@live.com)
+/// @version 1.0
+/// @date 2024-11-21
+///
+/// @copyright Copyright (c) 2024
+///
+/// @par 修改日志:
+/// <table>
+/// <tr><th>Date       <th>Version <th>Author  <th>Description
+/// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
+/// </table>
+///
 #include "getopt-port.h"
 
 #ifndef NEED_USUAL_GETOPT
@@ -20,7 +25,10 @@ int opterr = 1;   /* if error message should be printed */
 int optind = 1;   /* index into parent argv vector */
 int optopt = '?'; /* character checked for validity */
 
-static void pass(const char * a) { (void) a; }
+static void pass(const char * a)
+{
+    (void) a;
+}
 #define warnx(a, ...) pass(a)
 
 #define PRINT_ERROR ((opterr) && (*options != ':'))
@@ -89,7 +97,8 @@ static void permute_args(int panonopt_start, int panonopt_end, int opt_end, char
         cstart = panonopt_end + i;
         pos = cstart;
         for (j = 0; j < cyclelen; j++) {
-            if (pos >= panonopt_end) pos -= nnonopts;
+            if (pos >= panonopt_end)
+                pos -= nnonopts;
             else
                 pos += nopts;
             swap = nargv[pos];
@@ -106,8 +115,8 @@ static void permute_args(int panonopt_start, int panonopt_end, int opt_end, char
  *	Parse long options in argc/argv argument vector.
  * Returns -1 if short_too is set and the option does not match long_options.
  */
-static int parse_long_options(char ** nargv, const char * options, const struct option * long_options, int * idx,
-                              int short_too)
+static int
+parse_long_options(char ** nargv, const char * options, const struct option * long_options, int * idx, int short_too)
 {
     const char * current_argv;
     char * has_equal;
@@ -129,7 +138,8 @@ static int parse_long_options(char ** nargv, const char * options, const struct 
 
     for (i = 0; long_options[i].name; i++) {
         /* find matching long option */
-        if (0 != strncmp(current_argv, long_options[i].name, current_argv_len)) continue;
+        if (0 != strncmp(current_argv, long_options[i].name, current_argv_len))
+            continue;
 
         if (strlen(long_options[i].name) == current_argv_len) {
             /* exact match */
@@ -140,30 +150,35 @@ static int parse_long_options(char ** nargv, const char * options, const struct 
          * If this is a known short option, don't allow
          * a partial match of a single character.
          */
-        if (short_too && current_argv_len == 1) continue;
+        if (short_too && current_argv_len == 1)
+            continue;
 
         if (match == -1) /* partial match */
             match = i;
         else {
             /* ambiguous abbreviation */
-            if (PRINT_ERROR) warnx(ambig, (int) current_argv_len, current_argv);
+            if (PRINT_ERROR)
+                warnx(ambig, (int) current_argv_len, current_argv);
             optopt = 0;
             return BADCH;
         }
     }
     if (match != -1) { /* option found */
         if (long_options[match].has_arg == no_argument && has_equal) {
-            if (PRINT_ERROR) warnx(noarg, (int) current_argv_len, current_argv);
+            if (PRINT_ERROR)
+                warnx(noarg, (int) current_argv_len, current_argv);
             /*
              * XXX: GNU sets optopt to val regardless of flag
              */
-            if (long_options[match].flag == nullptr) optopt = long_options[match].val;
+            if (long_options[match].flag == nullptr)
+                optopt = long_options[match].val;
             else
                 optopt = 0;
             return BADARG;
         }
         if (long_options[match].has_arg == required_argument || long_options[match].has_arg == optional_argument) {
-            if (has_equal) optarg = has_equal;
+            if (has_equal)
+                optarg = has_equal;
             else if (long_options[match].has_arg == required_argument) {
                 /*
                  * optional argument doesn't use next nargv
@@ -176,11 +191,13 @@ static int parse_long_options(char ** nargv, const char * options, const struct 
              * Missing argument; leading ':' indicates no error
              * should be generated.
              */
-            if (PRINT_ERROR) warnx(recargstring, current_argv);
+            if (PRINT_ERROR)
+                warnx(recargstring, current_argv);
             /*
              * XXX: GNU sets optopt to val regardless of flag
              */
-            if (long_options[match].flag == nullptr) optopt = long_options[match].val;
+            if (long_options[match].flag == nullptr)
+                optopt = long_options[match].val;
             else
                 optopt = 0;
             --optind;
@@ -191,11 +208,13 @@ static int parse_long_options(char ** nargv, const char * options, const struct 
             --optind;
             return (-1);
         }
-        if (PRINT_ERROR) warnx(illoptstring, current_argv);
+        if (PRINT_ERROR)
+            warnx(illoptstring, current_argv);
         optopt = 0;
         return BADCH;
     }
-    if (idx) *idx = match;
+    if (idx)
+        *idx = match;
     if (long_options[match].flag) {
         *long_options[match].flag = long_options[match].val;
         return 0;
@@ -207,8 +226,12 @@ static int parse_long_options(char ** nargv, const char * options, const struct 
  * getopt_internal --
  *	Parse argc/argv argument vector.  Called by user level routines.
  */
-static int getopt_internal(int nargc, char ** nargv, const char * options, const struct option * long_options,
-                           int * idx, int flags)
+static int getopt_internal(int nargc,
+                           char ** nargv,
+                           const char * options,
+                           const struct option * long_options,
+                           int * idx,
+                           int flags)
 {
     char * oli; /* option letter list index */
     int optchar, short_too;
@@ -216,7 +239,8 @@ static int getopt_internal(int nargc, char ** nargv, const char * options, const
     size_t len;
     int optreset = 0;
 
-    if (options == nullptr) return (-1);
+    if (options == nullptr)
+        return (-1);
 
     /*
      * Disable GNU extensions if POSIXLY_CORRECT is set or options
@@ -226,17 +250,21 @@ static int getopt_internal(int nargc, char ** nargv, const char * options, const
         errno_t err = _wgetenv_s(&len, nullptr, 0, L"POSIXLY_CORRECT");
         posixly_correct = (err == 0) && (len > 0);
     }
-    if (!posixly_correct || *options == '+') flags &= ~FLAG_PERMUTE;
+    if (!posixly_correct || *options == '+')
+        flags &= ~FLAG_PERMUTE;
     else if (*options == '-')
         flags |= FLAG_ALLARGS;
-    if (*options == '+' || *options == '-') options++;
+    if (*options == '+' || *options == '-')
+        options++;
     /*
      * reset if requested
      */
-    if (optind == 0) optind = optreset = 1;
+    if (optind == 0)
+        optind = optreset = 1;
 
     optarg = nullptr;
-    if (optreset) nonopt_start = nonopt_end = -1;
+    if (optreset)
+        nonopt_start = nonopt_end = -1;
 start:
     if (optreset || !*place) { /* update scanning pointer */
         optreset = 0;
@@ -275,7 +303,8 @@ start:
                 return (-1);
             }
             /* do permutation */
-            if (nonopt_start == -1) nonopt_start = optind;
+            if (nonopt_start == -1)
+                nonopt_start = optind;
             else if (nonopt_end != -1) {
                 permute_args(nonopt_start, nonopt_end, optind, nargv);
                 nonopt_start = optind - (nonopt_end - nonopt_start);
@@ -285,7 +314,8 @@ start:
             /* process next argument */
             goto start;
         }
-        if (nonopt_start != -1 && nonopt_end == -1) nonopt_end = optind;
+        if (nonopt_start != -1 && nonopt_end == -1)
+            nonopt_end = optind;
 
         /*
          * If we have "-" do nothing, if "--" we are done.
@@ -314,7 +344,8 @@ start:
      */
     if (long_options != nullptr && place != nargv[optind] && (*place == '-' || (flags & FLAG_LONGONLY))) {
         short_too = 0;
-        if (*place == '-') place++; /* --foo long option */
+        if (*place == '-')
+            place++; /* --foo long option */
         else if (*place != ':' && strchr(options, *place) != nullptr)
             short_too = 1; /* could be short option too */
 
@@ -333,9 +364,12 @@ start:
          * options, return -1 (non-option) as per POSIX.
          * Otherwise, it is an unknown option character (or ':').
          */
-        if (optchar == (int) '-' && *place == '\0') return (-1);
-        if (!*place) ++optind;
-        if (PRINT_ERROR) warnx(illoptchar, optchar);
+        if (optchar == (int) '-' && *place == '\0')
+            return (-1);
+        if (!*place)
+            ++optind;
+        if (PRINT_ERROR)
+            warnx(illoptchar, optchar);
         optopt = optchar;
         return BADCH;
     }
@@ -345,7 +379,8 @@ start:
             ;
         else if (++optind >= nargc) { /* no arg */
             place = EMSG;
-            if (PRINT_ERROR) warnx(recargchar, optchar);
+            if (PRINT_ERROR)
+                warnx(recargchar, optchar);
             optopt = optchar;
             return BADARG;
         } /* white space */
@@ -355,7 +390,8 @@ start:
         return optchar;
     }
     if (*++oli != ':') { /* doesn't take argument */
-        if (!*place) ++optind;
+        if (!*place)
+            ++optind;
     } else { /* takes (optional) argument */
         optarg = nullptr;
         if (*place) /* no white space */
@@ -363,7 +399,8 @@ start:
         else if (oli[1] != ':') {    /* arg not optional */
             if (++optind >= nargc) { /* no arg */
                 place = EMSG;
-                if (PRINT_ERROR) warnx(recargchar, optchar);
+                if (PRINT_ERROR)
+                    warnx(recargchar, optchar);
                 optopt = optchar;
                 return BADARG;
             }

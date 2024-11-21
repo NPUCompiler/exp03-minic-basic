@@ -1,15 +1,19 @@
-﻿/**
- * @file Function.cpp
- * @author zenglj (zenglj@nwpu.edu.cn)
- * @brief 函数形参与函数管理
- * @version 0.1
- * @date 2023-09-24
- *
- * @copyright Copyright (c) 2023
- *
- */
+﻿///
+/// @file Function.cpp
+/// @brief 函数实现
+/// @author zenglj (zenglj@live.com)
+/// @version 1.0
+/// @date 2024-11-21
+///
+/// @copyright Copyright (c) 2024
+///
+/// @par 修改日志:
+/// <table>
+/// <tr><th>Date       <th>Version <th>Author  <th>Description
+/// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
+/// </table>
+///
 
-#include <algorithm>
 #include <cstdlib>
 #include <string>
 

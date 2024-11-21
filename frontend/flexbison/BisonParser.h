@@ -1,13 +1,18 @@
-﻿/**
- * @file BisonParser.h
- * @author zenglj (zenglj@nwpu.edu.cn)
- * @brief 语法分析共同头文件
- * @version 0.1
- * @date 2023-09-24
- *
- * @copyright Copyright (c) 2023
- *
- */
+﻿///
+/// @file BisonParser.h
+/// @brief Bison分析的头文件
+/// @author zenglj (zenglj@live.com)
+/// @version 1.0
+/// @date 2024-11-21
+///
+/// @copyright Copyright (c) 2024
+///
+/// @par 修改日志:
+/// <table>
+/// <tr><th>Date       <th>Version <th>Author  <th>Description
+/// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
+/// </table>
+///
 #pragma once
 
 #include "AttrType.h"

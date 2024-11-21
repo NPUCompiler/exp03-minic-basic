@@ -1,16 +1,19 @@
-﻿/**
- * @file Instruction.h
- * @author zenglj (zenglj@nwpu.edu.cn)
- * @brief IR指令类的头文件
- * @version 0.1
- * @date 2023-09-24
- *
- * @copyright Copyright (c) 2023
- *
- */
+﻿///
+/// @file Instruction.h
+/// @brief IR指令头文件
+/// @author zenglj (zenglj@live.com)
+/// @version 1.0
+/// @date 2024-11-21
+///
+/// @copyright Copyright (c) 2024
+///
+/// @par 修改日志:
+/// <table>
+/// <tr><th>Date       <th>Version <th>Author  <th>Description
+/// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
+/// </table>
+///
 #pragma once
-
-#include <vector>
 
 #include "User.h"
 

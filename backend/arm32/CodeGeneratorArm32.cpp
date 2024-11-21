@@ -1,12 +1,18 @@
-/**
- * @file CodeGeneratorArm32.cpp
- * @author zenglj (zenglj@nwpu.edu.cn)
- * @brief ARM32的后端处理源文件
- * @version 0.1
- * @date 2023-09-26
- * @copyright Copyright (c) 2023
- *
- */
+///
+/// @file CodeGeneratorArm32.cpp
+/// @brief ARM32的后端处理实现
+/// @author zenglj (zenglj@live.com)
+/// @version 1.0
+/// @date 2024-11-21
+///
+/// @copyright Copyright (c) 2024
+///
+/// @par 修改日志:
+/// <table>
+/// <tr><th>Date       <th>Version <th>Author  <th>Description
+/// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
+/// </table>
+///
 #include <cstdint>
 #include <cstdio>
 #include <string>

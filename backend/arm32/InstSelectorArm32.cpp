@@ -1,13 +1,18 @@
-﻿/**
- * @file InstSelectorArm32.cpp
- * @author zenglj (zenglj@nwpu.edu.cn)
- * @brief 指令选择器-ARM32
- * @version 0.1
- * @date 2023-09-24
- *
- * @copyright Copyright (c) 2023
- *
- */
+﻿///
+/// @file InstSelectorArm32.cpp
+/// @brief 指令选择器-ARM32的实现
+/// @author zenglj (zenglj@live.com)
+/// @version 1.0
+/// @date 2024-11-21
+///
+/// @copyright Copyright (c) 2024
+///
+/// @par 修改日志:
+/// <table>
+/// <tr><th>Date       <th>Version <th>Author  <th>Description
+/// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
+/// </table>
+///
 #include <cstdio>
 
 #include "Common.h"

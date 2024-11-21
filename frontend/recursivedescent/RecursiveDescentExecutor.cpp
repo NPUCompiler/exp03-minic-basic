@@ -1,13 +1,18 @@
-/**
- * @file RecursiveDescentExecutor.cpp
- * @author zenglj (zenglj@nwpu.edu.cn)
- * @brief 递归下降分析执行器的类实现
- * @version 0.1
- * @date 2024-01-24
- *
- * @copyright Copyright (c) 2024
- *
- */
+///
+/// @file RecursiveDescentExecutor.cpp
+/// @brief 递归下降分析执行器类的实现
+/// @author zenglj (zenglj@live.com)
+/// @version 1.0
+/// @date 2024-11-21
+///
+/// @copyright Copyright (c) 2024
+///
+/// @par 修改日志:
+/// <table>
+/// <tr><th>Date       <th>Version <th>Author  <th>Description
+/// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
+/// </table>
+///
 #include "RecursiveDescentExecutor.h"
 #include "RecursiveDescentFlex.h"
 #include "RecursiveDescentParser.h"
