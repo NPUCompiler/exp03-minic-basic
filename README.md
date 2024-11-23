@@ -1,13 +1,13 @@
-# MiniC编译器-基本版
+# 1. MiniC编译器-基本版
 
-## 编译器实现的功能
+## 1.1. 编译器实现的功能
 
 1. 实现对main函数的识别，不带参数
 2. 支持return语句，返回的表达式只能是无符号十进制整数
 
 源代码位置：<https://github.com/NPUCompiler/exp03-minic-basic.git>
 
-## 编译器的命令格式
+## 1.2. 编译器的命令格式
 
 命令格式：
 minic -S [-A | -D] [-T | -I] [-o output] [-O level] [-t cpu] source
@@ -26,7 +26,7 @@ minic -S [-A | -D] [-T | -I] [-o output] [-O level] [-t cpu] source
 选项-I指定时，输出中间IR(DragonIR)，默认输出的文件名为ir.txt，可通过-o选项来指定输出的文件。
 选项-T和-I都不指定时，按照默认的汇编语言输出，默认输出的文件名为asm.s，可通过-o选项来指定输出的文件。
 
-## 源代码构成
+## 1.3. 源代码构成
 
 ```text
 ├── CMake
@@ -57,7 +57,7 @@ minic -S [-A | -D] [-T | -I] [-o output] [-O level] [-t cpu] source
 └── utils                       集合、位图等共同的代码
 ```
 
-## 程序构建
+## 1.4. 程序构建
 
 请使用VSCode + WSL/Container/SSH + Ubuntu 22.04/20.04进行编译与程序构建。
 
@@ -74,7 +74,7 @@ clang-format和clang-tidy会利用根文件夹下的.clang-format和.clang-tidy�
 sudo apt install -y clang-format clang-tidy
 ```
 
-### cmake插件构建
+### 1.4.1. cmake插件构建
 
 在导入本git代码后，VSCode在右下角提示安装推荐的插件，一定要确保安装。若没有提示，重新打开尝试。
 
@@ -93,7 +93,7 @@ cmake -B cmake-build-debug -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER:FI
 cmake --build cmake-build-debug --parallel
 ```
 
-## 使用方法
+## 1.5. 使用方法
 
 在Ubuntu 22.04平台上运行。支持的命令如下所示：
 
@@ -119,19 +119,19 @@ cmake --build cmake-build-debug --parallel
 
 ```
 
-## 工具
+## 1.6. 工具
 
 本实验所需要的工具或软件在实验一环境准备中已经安装，这里不需要再次安装。
 
 这里主要介绍工具的功能。
 
-### Flex 与 Bison
+### 1.6.1. Flex 与 Bison
 
-#### Windows
+#### 1.6.1.1. Windows
 
 在Widnows平台上请使用MinGW进行开发，不建议用 Visual Studio。若确实想用，请用win_flex和win_bison工具。
 
-#### MinGW、Linux or Mac
+#### 1.6.1.2. MinGW、Linux or Mac
 
 flex -o MiniC_lex.cpp --header-file=MiniC_lex.h minic.l
 
@@ -139,7 +139,7 @@ bison -o MiniC_yacc.cpp --header=MiniC_yacc.h -d minic.y
 
 请注意 bison 的--header 在某些平台上可能是--defines，要根据情况调整指定。
 
-### Antlr 4.12.0
+### 1.6.2. Antlr 4.12.0
 
 要确认java15 以上版本的 JDK，否则编译不会通过。默认已经安装了JDK 17的版本。
 
@@ -157,25 +157,25 @@ C++使用 antlr 时需要使用 antlr 的头文件和库，在 msys2 下可通�
 pacman -U https://mirrors.ustc.edu.cn/msys2/mingw/mingw64/mingw-w64-x86_64-antlr4-runtime-cpp-4.12.0-1-any.pkg.tar.zst
 ```
 
-### Graphviz
+### 1.6.3. Graphviz
 
 借助该工具提供的C语言API实现抽象语法树的绘制。
 
-### doxygen
+### 1.6.4. doxygen
 
 借助该工具分析代码中的注释，产生详细分析的文档。这要求注释要满足一定的格式。具体可参考实验文档。
 
-### texlive
+### 1.6.5. texlive
 
 把doxygen生成的文档转换成pdf格式。
 
-## 根据注释生成文档
+## 1.7. 根据注释生成文档
 
 请按照实验的文档要求编写注释，可通过doxygen工具生成网页版的文档，借助latex可生成pdf格式的文档。
 
 请在本实验以及后续的实验按照格式进行注释。
 
-### 生成网页版文档
+### 1.7.1. 生成网页版文档
 
 ```shell
 doxygen Doxygen.config
@@ -183,20 +183,20 @@ doxygen Doxygen.config
 
 需要时可自行修改配置文件 Doxygen.config。
 
-### 生成 pdf格式的文档
+### 1.7.2. 生成 pdf格式的文档
 
 ```shell
 cd latex
 make
 ```
 
-## 实验运行
+## 1.8. 实验运行
 
 tests 目录下存放了一些简单的测试用例。
 
 由于 qemu 的用户模式在 Window 系统下不支持，因此要么在真实的开发板上运行，或者用 Linux 系统下的 qemu 来运行。
 
-### 调试运行
+### 1.8.1. 调试运行
 
 由于自定的gdb或者lldb调试器对C++的STL模版库提供的类如string、map等的显示不够友好，
 因此请大家确保安装vadimcn.vscode-lldb插件，也可以更新最新的代码后vscode会提示安装推荐插件后自动安装。
@@ -206,7 +206,7 @@ tests 目录下存放了一些简单的测试用例。
 
 调试运行配置可参考.vscode/launch.json中的配置。
 
-### 生成中间IR(DragonIR)与运行
+### 1.8.2. 生成中间IR(DragonIR)与运行
 
 前提需要下载并安装IRCompiler工具。
 
@@ -219,7 +219,7 @@ tests 目录下存放了一些简单的测试用例。
 第一条指令通过minic编译器来生成的汇编test1-1.ir
 第二条指令借助IRCompiler工具实现对生成IR的解释执行。
 
-### 生成 ARM32 的汇编
+### 1.8.3. 生成 ARM32 的汇编
 
 ```shell
 # 翻译 test1-1.c 成 ARM32 汇编
@@ -232,7 +232,7 @@ arm-linux-gnueabihf-gcc -S -o tests/test1-1-1.s tests/test1-1.c
 
 在调试运行时可通过对比检查所实现编译器的问题。
 
-### 生成可执行程序
+### 1.8.4. 生成可执行程序
 
 通过 gcc 的 arm 交叉编译器对生成的汇编进行编译，生成可执行程序。
 
@@ -249,7 +249,7 @@ arm-linux-gnueabihf-gcc -static -g -o tests/test1-1-1 tests/test1-1-1.s
 2. 可通过网址<https://godbolt.org/>输入 C 语言源代码后查看各种目标后端的汇编。下图是选择 ARM GCC 11.4.0 的源代码与汇编对应。
 ![godbolt 效果图](doc/figures/godbolt-test1-1-arm32-gcc.png)
 
-### 运行可执行程序
+### 1.8.5. 运行可执行程序
 
 借助用户模式的 qemu 来运行，arm 架构可使用 qemu-arm-static 命令。
 
@@ -274,15 +274,15 @@ qemu-arm-static tests/test1-1-0 < A.in > A.out
 qemu-arm-static tests/test1-1-1 < A.in > A.out
 ```
 
-## qemu 的用户模式
+## 1.9. qemu 的用户模式
 
 qemu 的用户模式下可直接运行交叉编译的用户态程序。这种模式只在 Linux 和 BSD 系统下支持，Windows 下不支持。
 
 因此，为便于后端开发与调试，请用 Linux 系统进行程序的模拟运行与调试。
 
-## qemu 用户程序调试
+## 1.10. qemu 用户程序调试
 
-### 安装 gdb 调试器
+### 1.10.1. 安装 gdb 调试器
 
 该软件 gdb-multiarch 在前面工具安装时已经安装。如没有，则通过下面的命令进行安装。
 
@@ -290,7 +290,7 @@ qemu 的用户模式下可直接运行交叉编译的用户态程序。这种模
 sudo apt-get install -y gdb-multiarch
 ```
 
-### 启动具有 gdbserver 功能的 qemu
+### 1.10.2. 启动具有 gdbserver 功能的 qemu
 
 假定通过交叉编译出的程序为 tests/test1，执行的命令如下：
 
@@ -301,7 +301,7 @@ qemu-arm-static -g 1234 tests/test1
 
 其中-g 指定远程调试的端口，这里指定端口号为 1234，这样 qemu 会开启 gdb 的远程调试服务。
 
-### 启动 gdb 作为客户端远程调试
+### 1.10.3. 启动 gdb 作为客户端远程调试
 
 建议通过 vscode 的调试，选择 Qemu Debug 进行调试，可开启图形化调试界面。
 
@@ -324,7 +324,7 @@ c
 
 在调试完毕后前面启动的 qemu-arm-static 程序会自动退出。因此，要想重新调试，请启动第一步的 qemu-arm-static 程序。
 
-## 源程序打包
+## 1.11. 源程序打包
 
 在执行前，请务必通过cmake进行build成功，这样会在cmake-build-debug目录下生成CPackSourceConfig.cmake文件。
 
@@ -338,6 +338,6 @@ cpack --config CPackSourceConfig.cmake
 
 可根据需要调整CMakeLists.txt文件的CPACK_SOURCE_IGNORE_FILES用于忽略源代码文件夹下的某些文件夹或者文件。
 
-## 二进制程序打包
+## 1.12. 二进制程序打包
 
 可在VScode页面下的状态栏上单击Run Cpack即可在cmake-build-debug产生zip和tar.gz格式的压缩包，里面包含编译出的可执行程序。
