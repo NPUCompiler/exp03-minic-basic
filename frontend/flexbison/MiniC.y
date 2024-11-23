@@ -47,8 +47,6 @@ void yyerror(char * msg);
 // 分隔符 一词一类 不需要赋予语义属性
 %token T_SEMICOLON T_L_PAREN T_R_PAREN T_L_BRACE T_R_BRACE
 
-// 运算符
-
 // 非终结符
 // %type指定文法的非终结符号，<>可指定文法属性
 %type <node> CompileUnit
@@ -60,16 +58,14 @@ void yyerror(char * msg);
 %type <node> Expr
 
 %%
-// 完整的编译单元语法如下
-// 编译单元可包含若干个函数与全局变量定义。要在语义分析时检查main函数存在
-// compileUnit: (funcDef | varDecl)* EOF;
-// bison不支持闭包运算，为便于追加修改成左递归方式
-// compileUnit: funcDef | varDecl | compileUnit funcDef | compileUnit varDecl
+
 // 目前 编译单元内部仅仅支持识别一个函数
 CompileUnit : FuncDef {
 
 		// 创建一个编译单元的节点AST_OP_COMPILE_UNIT
         $$ = create_contain_node(ast_operator_type::AST_OP_COMPILE_UNIT, $1);
+
+		// 设置到全局变量中
         ast_root = $$;
     }
     ;
@@ -77,22 +73,23 @@ CompileUnit : FuncDef {
 // 函数定义，目前支持整数返回类型，不支持形参
 FuncDef : T_INT T_ID T_L_PAREN T_R_PAREN Block  {
 
-        // 创建整型类型节点的终结符节点
-        ast_node * type_node = ast_node::New(IntegerType::getTypeInt());
+		// 函数返回之后类型
+        type_attr funcReturnType = $1;
 
-        // 创建函数名的标识符终结符节点
-        ast_node * name_node = ast_node::New(std::string($2.id), $2.lineno);
-
-		// 对于字符型字面量的字符串空间需要释放，因词法用到了strdup进行了字符串复制
-		free($2.id);
-
-        // 形参结点没有，设置为空指针
-        ast_node * formalParamsNode = nullptr;
+		// 函数名
+		var_id_attr funcId = $2;
 
 		// 函数体节点即Block，即$5
+		ast_node * blockNode = $5;
+
+		// 形参结点没有，设置为空指针
+		ast_node * formalParamsNode = nullptr;
 
 		// 创建函数定义的节点，孩子有类型，函数名，语句块和形参(实际上无)
-        $$ = create_func_def(type_node, name_node, $5, formalParamsNode);
+        $$ = create_func_def(funcReturnType, funcId, blockNode, formalParamsNode);
+
+		// 对于字符型字面量的字符串空间需要释放，因词法用到了strdup进行了字符串空间的申请
+		free($2.id);
     }
     ;
 
@@ -101,18 +98,20 @@ FuncDef : T_INT T_ID T_L_PAREN T_R_PAREN Block  {
 // Block ： T_L_BRACE T_R_BRACE | T_L_BRACE BlockItemList T_R_BRACE
 Block : T_L_BRACE T_R_BRACE {
 		// 语句块没有语句
+
 		// 为了方便创建一个空的Block节点
         $$ = create_contain_node(ast_operator_type::AST_OP_BLOCK);
     }
     | T_L_BRACE BlockItemList T_R_BRACE {
         // 语句块含有语句
+
 		// BlockItemList归约时内部创建Block节点，并把语句加入，这里不创建Block节点
         $$ = $2;
     }
     ;
 
 // 语句块内语句列表的文法：BlockItemList : BlockItem+
-// Bison不支持正闭包，因此需要修改成左递归形式
+// Bison不支持正闭包，需修改成左递归形式，便于属性的传递与孩子节点的追加
 // 左递归形式的文法为：BlockItemList : BlockItem | BlockItemList BlockItem
 BlockItemList : BlockItem {
         // 第一个左侧的孩子节点归约成Block节点，后续语句可持续作为孩子追加到Block节点中
@@ -126,8 +125,8 @@ BlockItemList : BlockItem {
     ;
 
 
-// 完整语句块子项的文法：BlockItem : Statement | VarDecl
-// 目前只支持语句,不支持变量定义
+// 语句块中子项的文法：BlockItem : Statement
+// 目前只支持语句,后续可增加支持变量定义
 BlockItem : Statement  {
 		// 语句节点传递给归约后的节点上，综合属性
         $$ = $1;
@@ -135,11 +134,7 @@ BlockItem : Statement  {
     ;
 
 
-// 完整语句文法：statement:T_RETURN expr T_SEMICOLON | lVal T_ASSIGN expr T_SEMICOLON
-// | block | expr? T_SEMICOLON
-// 支持返回语句、赋值语句、语句块、表达式语句
-// 其中表达式语句可支持空语句，由于bison不支持?，修改成两条
-// 当前语句文法：statement:T_RETURN expr T_SEMICOLON,即仅支持return语句
+// 目前语句只支持return语句，其文法：statement -> T_RETURN expr T_SEMICOLON
 Statement : T_RETURN Expr T_SEMICOLON {
         // 返回语句
 
@@ -147,16 +142,14 @@ Statement : T_RETURN Expr T_SEMICOLON {
         $$ = create_contain_node(ast_operator_type::AST_OP_RETURN, $2);
     }
 	;
-	
 
-// 表达式文法 expr : T_DIGIT
-// 表达式目前只支持数字识别
-Expr :T_DIGIT {
-		$$ = ast_node::New(digit_int_attr{$1.val, $1.lineno});
+// 表达式目前只支持无符号数识别，其文法为expr -> T_DIGIT
+Expr : T_DIGIT {
+		$$ = ast_node::New($1);
 	}
     ;
 
-//TODO
+
 %%
 
 // 语法识别错误要调用函数的定义

@@ -45,23 +45,9 @@ enum class ast_operator_type : int {
     AST_OP_LEAF_TYPE,
 
     /* 以下为AST的内部节点，含根节点 */
-    /// @brief 二元运算符+
-    AST_OP_ADD,
 
-    /// @brief 二元运算符*
-    AST_OP_SUB, //
-
-    /// @brief 多个语句组成的块运算符，也称为复合语句
-    AST_OP_BLOCK,
-
-    /// @brief 符合语句，也就是语句块，两个名字一个运算符
-    AST_OP_COMPOUNDSTMT = AST_OP_BLOCK,
-
-    /// @brief 赋值语句运算符
-    AST_OP_ASSIGN,
-
-    /// @brief return语句运算符
-    AST_OP_RETURN,
+    /// @brief 文件编译单元运算符，可包含函数定义、语句块等孩子
+    AST_OP_COMPILE_UNIT,
 
     /// @brief 函数定义运算符，函数名和返回值类型作为节点的属性，自左到右孩子：AST_OP_FUNC_FORMAL_PARAMS、AST_OP_BLOCK
     AST_OP_FUNC_DEF,
@@ -69,23 +55,14 @@ enum class ast_operator_type : int {
     /// @brief 形式参数列表运算符，可包含多个孩子：AST_OP_FUNC_FORMAL_PARAM
     AST_OP_FUNC_FORMAL_PARAMS,
 
-    /// @brief 形参运算符，属性包含名字与类型，复杂类型时可能要包含孩子
-    AST_OP_FUNC_FORMAL_PARAM,
+    /// @brief 多个语句组成的块运算符，也称为复合语句
+    AST_OP_BLOCK,
 
-    /// @brief 函数调用运算符，函数名作为节点属性，孩子包含AST_OP_FUNC_REAL_PARAMS
-    AST_OP_FUNC_CALL,
+    /// @brief 符合语句，也就是语句块，两个名字一个运算符
+    AST_OP_COMPOUNDSTMT = AST_OP_BLOCK,
 
-    /// @brief 实际参数列表运算符，可包含多个表达式AST_OP_EXPR
-    AST_OP_FUNC_REAL_PARAMS,
-
-    /// @brief 文件编译单元运算符，可包含函数定义、语句块等孩子
-    AST_OP_COMPILE_UNIT,
-
-    /// @brief 变量声明语句
-    AST_OP_DECL_STMT,
-
-    /// @brief 变量声明
-    AST_OP_VAR_DECL,
+    /// @brief return语句运算符
+    AST_OP_RETURN,
 
     // TODO 抽象语法树其它内部节点运算符追加
 

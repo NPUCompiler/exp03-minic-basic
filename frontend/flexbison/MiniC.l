@@ -35,6 +35,7 @@
 
 %x COMMENT
 /* 辅助定义式或者宏，后面使用时带上大括号 */
+/* \040代表8进制的32的识别，也就是空格字符 */
 
 d			[0-9]
 l           [a-zA-Z]
@@ -60,27 +61,33 @@ white_line  [\r\n]
             }
 
 "int"       {
-                // int类型关键字 关键字的识别要在标识符的前边。
+                // int类型关键字 关键字的识别要在标识符识别的前边，这是因为关键字也是标识符，不过是保留的
                 yylval.type.type = BasicType::TYPE_INT;
                 yylval.type.lineno = yylineno;
                 return T_INT;
             }
 
 "return"    {
-                // return关键字 关键字的识别要在标识符的前边。
+                // return关键字 关键字的识别要在标识符识别的前边，，这是因为关键字也是标识符，不过是保留的
                 return T_RETURN;
             }
 
 {l}+({d}|{l})* {
-				// strdup 分配的空间需要用户使用free手动释放
+				// strdup 分配的空间需要在使用完毕后使用free手动释放，否则会造成内存泄漏
                 yylval.var_id.id = strdup(yytext);
                 yylval.var_id.lineno = yylineno;
                 return T_ID;
             }
 
-{white}+	 ;
+{white}+	{
+				// 空白符号忽略
+				;
+			}
 
-{white_line}+ ;
+{white_line}+ {
+				// 空白行忽略
+				;
+			}
 
 .			{
                 printf("Line %d: Invalid char %s\n", yylineno, yytext);

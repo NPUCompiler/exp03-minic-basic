@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "AST.h"
-#include "Common.h"
 #include "Function.h"
 #include "IRCode.h"
 #include "IRGenerator.h"
@@ -27,8 +26,6 @@
 #include "EntryInstruction.h"
 #include "LabelInstruction.h"
 #include "ExitInstruction.h"
-#include "FuncCallInstruction.h"
-#include "BinaryInstruction.h"
 #include "MoveInstruction.h"
 #include "GotoInstruction.h"
 
@@ -39,27 +36,14 @@ IRGenerator::IRGenerator(ast_node * _root, Module * _module) : root(_root), modu
 {
     /* 叶子节点 */
     ast2ir_handlers[ast_operator_type::AST_OP_LEAF_LITERAL_UINT] = &IRGenerator::ir_leaf_node_uint;
-    ast2ir_handlers[ast_operator_type::AST_OP_LEAF_VAR_ID] = &IRGenerator::ir_leaf_node_var_id;
     ast2ir_handlers[ast_operator_type::AST_OP_LEAF_TYPE] = &IRGenerator::ir_leaf_node_type;
 
-    /* 表达式运算， 加减 */
-    ast2ir_handlers[ast_operator_type::AST_OP_SUB] = &IRGenerator::ir_sub;
-    ast2ir_handlers[ast_operator_type::AST_OP_ADD] = &IRGenerator::ir_add;
-
     /* 语句 */
-    ast2ir_handlers[ast_operator_type::AST_OP_ASSIGN] = &IRGenerator::ir_assign;
     ast2ir_handlers[ast_operator_type::AST_OP_RETURN] = &IRGenerator::ir_return;
-
-    /* 函数调用 */
-    ast2ir_handlers[ast_operator_type::AST_OP_FUNC_CALL] = &IRGenerator::ir_function_call;
 
     /* 函数定义 */
     ast2ir_handlers[ast_operator_type::AST_OP_FUNC_DEF] = &IRGenerator::ir_function_define;
     ast2ir_handlers[ast_operator_type::AST_OP_FUNC_FORMAL_PARAMS] = &IRGenerator::ir_function_formal_params;
-
-    /* 变量定义语句 */
-    ast2ir_handlers[ast_operator_type::AST_OP_DECL_STMT] = &IRGenerator::ir_declare_statment;
-    ast2ir_handlers[ast_operator_type::AST_OP_VAR_DECL] = &IRGenerator::ir_variable_declare;
 
     /* 语句块 */
     ast2ir_handlers[ast_operator_type::AST_OP_BLOCK] = &IRGenerator::ir_block;
@@ -261,83 +245,6 @@ bool IRGenerator::ir_function_formal_params(ast_node * node)
     return true;
 }
 
-/// @brief 函数调用AST节点翻译成线性中间IR
-/// @param node AST节点
-/// @return 翻译是否成功，true：成功，false：失败
-bool IRGenerator::ir_function_call(ast_node * node)
-{
-    std::vector<Value *> realParams;
-
-    // 获取当前正在处理的函数
-    Function * currentFunc = module->getCurrentFunction();
-
-    // 函数调用的节点包含两个节点：
-    // 第一个节点：函数名节点
-    // 第二个节点：实参列表节点
-
-    std::string funcName = node->sons[0]->name;
-    int64_t lineno = node->sons[0]->line_no;
-
-    ast_node * paramsNode = node->sons[1];
-
-    // 根据函数名查找函数，看是否存在。若不存在则出错
-    // 这里约定函数必须先定义后使用
-    auto calledFunction = module->findFunction(funcName);
-    if (nullptr == calledFunction) {
-        minic_log(LOG_ERROR, "函数(%s)未定义或声明", funcName.c_str());
-        return false;
-    }
-
-    // 当前函数存在函数调用
-    currentFunc->setExistFuncCall(true);
-
-    // 如果没有孩子，也认为是没有参数
-    if (!paramsNode->sons.empty()) {
-
-        int32_t argsCount = (int32_t) paramsNode->sons.size();
-
-        // 当前函数中调用函数实参个数最大值统计，实际上是统计实参传参需在栈中分配的大小
-        // 因为目前的语言支持的int和float都是四字节的，只统计个数即可
-        if (argsCount > currentFunc->getMaxFuncCallArgCnt()) {
-            currentFunc->setMaxFuncCallArgCnt(argsCount);
-        }
-
-        // 遍历参数列表，孩子是表达式
-        // 这里自左往右计算表达式
-        for (auto son: paramsNode->sons) {
-
-            // 遍历Block的每个语句，进行显示或者运算
-            ast_node * temp = ir_visit_ast_node(son);
-            if (!temp) {
-                return false;
-            }
-
-            realParams.push_back(temp->val);
-            node->blockInsts.addInst(temp->blockInsts);
-        }
-    }
-
-    // TODO 这里请追加函数调用的语义错误检查，这里只进行了函数参数的个数检查等，其它请自行追加。
-    if (realParams.size() != calledFunction->getParams().size()) {
-        // 函数参数的个数不一致，语义错误
-        minic_log(LOG_ERROR, "第%lld行的被调用函数(%s)未定义或声明", (long long) lineno, funcName.c_str());
-        return false;
-    }
-
-    // 返回调用有返回值，则需要分配临时变量，用于保存函数调用的返回值
-    Type * type = calledFunction->getReturnType();
-
-    FuncCallInstruction * funcCallInst = new FuncCallInstruction(currentFunc, calledFunction, realParams, type);
-
-    // 创建函数调用指令
-    node->blockInsts.addInst(funcCallInst);
-
-    // 函数调用结果Value保存到node中，可能为空，上层节点可利用这个值
-    node->val = funcCallInst;
-
-    return true;
-}
-
 /// @brief 语句块（含函数体）AST节点翻译成线性中间IR
 /// @param node AST节点
 /// @return 翻译是否成功，true：成功，false：失败
@@ -364,133 +271,6 @@ bool IRGenerator::ir_block(ast_node * node)
     if (node->needScope) {
         module->leaveScope();
     }
-
-    return true;
-}
-
-/// @brief 整数加法AST节点翻译成线性中间IR
-/// @param node AST节点
-/// @return 翻译是否成功，true：成功，false：失败
-bool IRGenerator::ir_add(ast_node * node)
-{
-    ast_node * src1_node = node->sons[0];
-    ast_node * src2_node = node->sons[1];
-
-    // 加法节点，左结合，先计算左节点，后计算右节点
-
-    // 加法的左边操作数
-    ast_node * left = ir_visit_ast_node(src1_node);
-    if (!left) {
-        // 某个变量没有定值
-        return false;
-    }
-
-    // 加法的右边操作数
-    ast_node * right = ir_visit_ast_node(src2_node);
-    if (!right) {
-        // 某个变量没有定值
-        return false;
-    }
-
-    // 这里只处理整型的数据，如需支持实数，则需要针对类型进行处理
-    // TODO real number add
-
-    BinaryInstruction * addInst = new BinaryInstruction(module->getCurrentFunction(),
-                                                        IRInstOperator::IRINST_OP_ADD_I,
-                                                        left->val,
-                                                        right->val,
-                                                        IntegerType::getTypeInt());
-
-    // 创建临时变量保存IR的值，以及线性IR指令
-    node->blockInsts.addInst(left->blockInsts);
-    node->blockInsts.addInst(right->blockInsts);
-    node->blockInsts.addInst(addInst);
-
-    node->val = addInst;
-
-    return true;
-}
-
-/// @brief 整数减法AST节点翻译成线性中间IR
-/// @param node AST节点
-/// @return 翻译是否成功，true：成功，false：失败
-bool IRGenerator::ir_sub(ast_node * node)
-{
-    ast_node * src1_node = node->sons[0];
-    ast_node * src2_node = node->sons[1];
-
-    // 加法节点，左结合，先计算左节点，后计算右节点
-
-    // 加法的左边操作数
-    ast_node * left = ir_visit_ast_node(src1_node);
-    if (!left) {
-        // 某个变量没有定值
-        return false;
-    }
-
-    // 加法的右边操作数
-    ast_node * right = ir_visit_ast_node(src2_node);
-    if (!right) {
-        // 某个变量没有定值
-        return false;
-    }
-
-    // 这里只处理整型的数据，如需支持实数，则需要针对类型进行处理
-    // TODO real number add
-
-    BinaryInstruction * subInst = new BinaryInstruction(module->getCurrentFunction(),
-                                                        IRInstOperator::IRINST_OP_SUB_I,
-                                                        left->val,
-                                                        right->val,
-                                                        IntegerType::getTypeInt());
-
-    // 创建临时变量保存IR的值，以及线性IR指令
-    node->blockInsts.addInst(left->blockInsts);
-    node->blockInsts.addInst(right->blockInsts);
-    node->blockInsts.addInst(subInst);
-
-    node->val = subInst;
-
-    return true;
-}
-
-/// @brief 赋值AST节点翻译成线性中间IR
-/// @param node AST节点
-/// @return 翻译是否成功，true：成功，false：失败
-bool IRGenerator::ir_assign(ast_node * node)
-{
-    ast_node * son1_node = node->sons[0];
-    ast_node * son2_node = node->sons[1];
-
-    // 赋值节点，自右往左运算
-
-    // 赋值运算符的左侧操作数
-    ast_node * left = ir_visit_ast_node(son1_node);
-    if (!left) {
-        // 某个变量没有定值
-        // 这里缺省设置变量不存在则创建，因此这里不会错误
-        return false;
-    }
-
-    // 赋值运算符的右侧操作数
-    ast_node * right = ir_visit_ast_node(son2_node);
-    if (!right) {
-        // 某个变量没有定值
-        return false;
-    }
-
-    // 这里只处理整型的数据，如需支持实数，则需要针对类型进行处理
-    // TODO real number add
-
-    MoveInstruction * movInst = new MoveInstruction(module->getCurrentFunction(), left->val, right->val);
-
-    // 创建临时变量保存IR的值，以及线性IR指令
-    node->blockInsts.addInst(right->blockInsts);
-    node->blockInsts.addInst(left->blockInsts);
-    node->blockInsts.addInst(movInst);
-
-    // 这里假定赋值的类型是一致的
-    node->val = movInst;
 
     return true;
 }
@@ -545,23 +325,6 @@ bool IRGenerator::ir_leaf_node_type(ast_node * node)
     return true;
 }
 
-/// @brief 标识符叶子节点翻译成线性中间IR，变量声明的不走这个语句
-/// @param node AST节点
-/// @return 翻译是否成功，true：成功，false：失败
-bool IRGenerator::ir_leaf_node_var_id(ast_node * node)
-{
-    Value * val;
-
-    // 查找ID型Value
-    // 变量，则需要在符号表中查找对应的值
-
-    val = module->findVarValue(node->name);
-
-    node->val = val;
-
-    return true;
-}
-
 /// @brief 无符号整数字面量叶子节点翻译成线性中间IR
 /// @param node AST节点
 /// @return 翻译是否成功，true：成功，false：失败
@@ -573,39 +336,6 @@ bool IRGenerator::ir_leaf_node_uint(ast_node * node)
     val = module->newConstInt((int32_t) node->integer_val);
 
     node->val = val;
-
-    return true;
-}
-
-/// @brief 变量声明语句节点翻译成线性中间IR
-/// @param node AST节点
-/// @return 翻译是否成功，true：成功，false：失败
-bool IRGenerator::ir_declare_statment(ast_node * node)
-{
-    bool result = false;
-
-    for (auto & child: node->sons) {
-
-        // 遍历每个变量声明
-        result = ir_variable_declare(child);
-        if (!result) {
-            break;
-        }
-    }
-
-    return result;
-}
-
-/// @brief 变量定声明节点翻译成线性中间IR
-/// @param node AST节点
-/// @return 翻译是否成功，true：成功，false：失败
-bool IRGenerator::ir_variable_declare(ast_node * node)
-{
-    // 共有两个孩子，第一个类型，第二个变量名
-
-    // TODO 这里可强化类型等检查
-
-    node->val = module->newVarValue(node->sons[0]->type, node->sons[1]->name);
 
     return true;
 }

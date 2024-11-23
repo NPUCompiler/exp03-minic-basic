@@ -276,28 +276,6 @@ ast_node * create_contain_node(ast_operator_type node_type,
     return node;
 }
 
-/// @brief 创建函数调用的节点
-/// @param funcname_node 函数名节点
-/// @param params_node 实参节点
-/// @return 创建的节点
-ast_node * create_func_call(ast_node * funcname_node, ast_node * params_node)
-{
-    ast_node * node = new ast_node(ast_operator_type::AST_OP_FUNC_CALL);
-
-    // 设置调用函数名
-    node->name = funcname_node->name;
-
-    // 如果没有参数，则创建参数节点
-    if (!params_node) {
-        params_node = new ast_node(ast_operator_type::AST_OP_FUNC_REAL_PARAMS);
-    }
-
-    (void) node->insert_son_node(funcname_node);
-    (void) node->insert_son_node(params_node);
-
-    return node;
-}
-
 Type * typeAttr2Type(type_attr & attr)
 {
     if (attr.type == BasicType::TYPE_INT) {
@@ -317,90 +295,4 @@ ast_node * create_type_node(type_attr & attr)
     ast_node * type_node = ast_node::New(type);
 
     return type_node;
-}
-
-///
-/// @brief 根据第一个变量定义创建变量声明语句节点
-/// @param first_child 第一个变量定义节点，其类型为AST_OP_VAR_DECL
-/// @return ast_node* 变量声明语句节点
-///
-ast_node * create_var_decl_stmt_node(ast_node * first_child)
-{
-    // 创建变量声明语句
-    ast_node * stmt_node = create_contain_node(ast_operator_type::AST_OP_DECL_STMT);
-
-    if (first_child) {
-
-        stmt_node->type = first_child->type;
-
-        // 插入到变量声明语句
-        (void) stmt_node->insert_son_node(first_child);
-    }
-
-    return stmt_node;
-}
-
-ast_node * createVarDeclNode(Type * type, var_id_attr & id)
-{
-    // 创建整型类型节点的终结符节点
-    ast_node * type_node = ast_node::New(type);
-
-    // 创建标识符终结符节点
-    ast_node * id_node = ast_node::New(id.id, id.lineno);
-
-    // 对于字符型字面量的字符串空间需要释放，因词法用到了strdup进行了字符串复制
-    free(id.id);
-    id.id = nullptr;
-
-    // 创建变量定义节点
-    ast_node * decl_node = create_contain_node(ast_operator_type::AST_OP_VAR_DECL, type_node, id_node);
-
-    // 暂存类型
-    decl_node->type = type;
-
-    return decl_node;
-}
-
-ast_node * createVarDeclNode(type_attr & type, var_id_attr & id)
-{
-    return createVarDeclNode(typeAttr2Type(type), id);
-}
-
-///
-/// @brief 根据变量的类型和属性创建变量声明语句节点
-/// @param type 变量的类型
-/// @param id 变量的名字
-/// @return ast_node* 变量声明语句节点
-///
-ast_node * create_var_decl_stmt_node(type_attr & type, var_id_attr & id)
-{
-    // 创建变量定义节点
-    ast_node * decl_node = createVarDeclNode(type, id);
-
-    // 创建变量声明语句
-    ast_node * stmt_node = create_contain_node(ast_operator_type::AST_OP_DECL_STMT);
-
-    stmt_node->type = decl_node->type;
-
-    // 插入到变量声明语句
-    (void) stmt_node->insert_son_node(decl_node);
-
-    return stmt_node;
-}
-
-///
-/// @brief 向变量声明语句中追加变量声明
-/// @param stmt_node 变量声明语句
-/// @param id 变量的名字
-/// @return ast_node* 变量声明语句节点
-///
-ast_node * add_var_decl_node(ast_node * stmt_node, var_id_attr & id)
-{
-    // 创建变量定义节点
-    ast_node * decl_node = createVarDeclNode(stmt_node->type, id);
-
-    // 插入到变量声明语句
-    (void) stmt_node->insert_son_node(decl_node);
-
-    return stmt_node;
 }

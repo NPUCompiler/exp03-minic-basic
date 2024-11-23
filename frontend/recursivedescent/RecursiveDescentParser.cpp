@@ -209,7 +209,7 @@ static ast_node * funcDef()
     if (F(T_INT)) {
 
         // 函数返回之后类型
-        type_attr type = rd_lval.type;
+        type_attr funcReturnType = rd_lval.type;
 
         // 跳过当前的记号，指向下一个记号
         advance();
@@ -218,7 +218,7 @@ static ast_node * funcDef()
         if (F(T_ID)) {
 
             // 获取标识符的值和定位信息
-            var_id_attr id = rd_lval.var_id;
+            var_id_attr funcId = rd_lval.var_id;
 
             // 跳过当前的记号，指向下一个记号
             advance();
@@ -232,12 +232,11 @@ static ast_node * funcDef()
                     // 识别block
                     ast_node * blockNode = Block();
 
-                    // 根据第一个变量声明创建变量声明语句节点并加入其中
                     // 形参结点没有，设置为空指针
                     ast_node * formalParamsNode = nullptr;
 
                     // 创建函数定义的节点，孩子有类型，函数名，语句块和形参(实际上无)
-                    return create_func_def(type, id, blockNode, formalParamsNode);
+                    return create_func_def(funcReturnType, funcId, blockNode, formalParamsNode);
 
                 } else {
                     semerror("函数定义缺少右小括号");
