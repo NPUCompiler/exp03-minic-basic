@@ -133,9 +133,10 @@ cmake --build cmake-build-debug --parallel
 
 #### 1.6.1.2. MinGW、Linux or Mac
 
-flex -o MiniC_lex.cpp --header-file=MiniC_lex.h minic.l
-
-bison -o MiniC_yacc.cpp --header=MiniC_yacc.h -d minic.y
+```shell
+flex -o MiniCFlex.cpp --header-file=MiniCFlex.h minic.l
+bison -o MinicBison.cpp --header=MinicBison.h -d minic.y
+```
 
 请注意 bison 的--header 在某些平台上可能是--defines，要根据情况调整指定。
 
@@ -175,18 +176,15 @@ pacman -U https://mirrors.ustc.edu.cn/msys2/mingw/mingw64/mingw-w64-x86_64-antlr
 
 请在本实验以及后续的实验按照格式进行注释。
 
-### 1.7.1. 生成网页版文档
+执行的下面的命令后会在doc文件夹下生成html和latex文件夹，通过打开index.html可浏览。
 
 ```shell
 doxygen Doxygen.config
 ```
 
-需要时可自行修改配置文件 Doxygen.config。
-
-### 1.7.2. 生成 pdf格式的文档
-
+在安装texlive等latex工具后，可通过执行的下面的命令产生refman.pdf文件。
 ```shell
-cd latex
+cd doc/latex
 make
 ```
 
@@ -277,7 +275,6 @@ qemu-arm-static tests/test1-1-1 < A.in > A.out
 ## 1.9. qemu 的用户模式
 
 qemu 的用户模式下可直接运行交叉编译的用户态程序。这种模式只在 Linux 和 BSD 系统下支持，Windows 下不支持。
-
 因此，为便于后端开发与调试，请用 Linux 系统进行程序的模拟运行与调试。
 
 ## 1.10. qemu 用户程序调试
