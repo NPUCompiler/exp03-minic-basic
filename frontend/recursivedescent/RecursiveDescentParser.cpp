@@ -95,18 +95,17 @@ static void semerror(const char * format, ...)
 ///
 static ast_node * expr()
 {
+    ast_node * node = nullptr;
     if (F(T_DIGIT)) {
         // 无符号整数
 
-        ast_node * node = ast_node::New(rd_lval.integer_num);
+        node = ast_node::New(rd_lval.integer_num);
 
         // 跳过当前记号，指向下一个记号
         advance();
-
-        return node;
     }
 
-    return nullptr;
+    return node;
 }
 
 ///
@@ -225,8 +224,9 @@ static ast_node * funcDef()
 
             // 函数定义的左右括号识别
             if (match(T_L_PAREN)) {
+                // 函数定义
 
-                // 目前函数定义不执行形参，因此必须是右小括号
+                // 目前函数定义没有形参，因此必须是右小括号
                 if (match(T_R_PAREN)) {
 
                     // 识别block

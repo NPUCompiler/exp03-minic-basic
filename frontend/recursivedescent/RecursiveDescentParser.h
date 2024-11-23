@@ -25,19 +25,19 @@ enum RDTokenType {
     T_EOF = 0,
 
     T_DIGIT,
-    T_ID,
     T_INT,
+	T_ID,
 
-    T_ADD,
-    T_SUB,
     T_L_PAREN,
     T_R_PAREN,
     T_L_BRACE,
     T_R_BRACE,
-    T_ASSIGN,
     T_SEMICOLON,
-    T_COMMA,
+
     T_RETURN,
+
+
+
 };
 
 /// @brief 词法与语法分析数据交互的Token的值类型

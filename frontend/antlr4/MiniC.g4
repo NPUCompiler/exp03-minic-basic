@@ -28,7 +28,7 @@ blockItem: statement;
 //TODO 变量声明
 
 // 目前语句支持return和赋值语句
-statement: T_RETURN expr T_SEMICOLON # returnStatement;
+statement: T_RETURN expr T_SEMICOLON         # returnStatement;
 
 // 目前表达式只支持一个无符号整数
 expr: T_DIGIT;

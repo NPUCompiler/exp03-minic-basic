@@ -37,21 +37,22 @@
 /* 辅助定义式或者宏，后面使用时带上大括号 */
 /* \040代表8进制的32的识别，也就是空格字符 */
 
-d			[0-9]
+d           [0-9]
 l           [a-zA-Z]
-white		[\t\040]
+white       [\t\040]
 white_line  [\r\n]
 
 /* 正规式定义 */
 %%
 
-"("			{return T_L_PAREN;}
-")"			{return T_R_PAREN;}
+"("         { return T_L_PAREN; }
+")"         { return T_R_PAREN; }
+"{"         { return T_L_BRACE; }
+"}"         { return T_R_BRACE; }
 
-";"         {return T_SEMICOLON;}
+";"         { return T_SEMICOLON; }
 
-"{"         {return T_L_BRACE;}
-"}"         {return T_R_BRACE; }
+
 
 "0"|[1-9][0-9]*	{
                 // 词法识别无符号整数，注意对于负数，则需要识别为负号和无符号数两个Token
@@ -73,23 +74,23 @@ white_line  [\r\n]
             }
 
 {l}+({d}|{l})* {
-				// strdup 分配的空间需要在使用完毕后使用free手动释放，否则会造成内存泄漏
+                // strdup 分配的空间需要在使用完毕后使用free手动释放，否则会造成内存泄漏
                 yylval.var_id.id = strdup(yytext);
                 yylval.var_id.lineno = yylineno;
                 return T_ID;
             }
 
-{white}+	{
-				// 空白符号忽略
-				;
-			}
+{white}+    {
+                // 空白符号忽略
+                ;
+            }
 
 {white_line}+ {
-				// 空白行忽略
-				;
-			}
+                // 空白行忽略
+                ;
+            }
 
-.			{
+.	    {
                 printf("Line %d: Invalid char %s\n", yylineno, yytext);
                 // 词法识别错误
                 return 257;

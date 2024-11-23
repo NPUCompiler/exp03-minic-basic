@@ -59,7 +59,6 @@ string getNodeName(ast_node * astnode)
         case ast_operator_type::AST_OP_FUNC_FORMAL_PARAMS:
             nodeName = "formal_params";
             break;
-
             // TODO 这里追加其它类型的结点，返回对应结点的字符串
 
         default:
