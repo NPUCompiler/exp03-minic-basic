@@ -324,60 +324,20 @@ c
 
 在调试完毕后前面启动的 qemu-arm-static 程序会自动退出。因此，要想重新调试，请启动第一步的 qemu-arm-static 程序。
 
-## 实用脚本说明
+## 源程序打包
 
-tools文件夹下有以`.sh`结尾的脚本文件，可以便捷地帮我们执行一些重复操作。
+在执行前，请务必通过cmake进行build成功，这样会在cmake-build-debug目录下生成CPackSourceConfig.cmake文件。
 
-脚本文件使用前可能需要使用如下指令来给脚本赋予权限。
-
-```bash
-chmod +x name.sh
+进入cmake-build-debug目录下执行如下的命令可产生源代码压缩包，用于实验源代码的提交
+```shell
+cd cmake-build-debug
+cpack --config CPackSourceConfig.cmake
 ```
 
-在实验的过程中，也可以根据自己的需要实时修改增加脚本，提升自己的开发效率（自己不会写可以让ai帮忙写）。
+在cmake-build-debug目录下默认会产生zip和tar.gz格式的文件。
 
-### 抽象语法树生成脚本
+可根据需要调整CMakeLists.txt文件的CPACK_SOURCE_IGNORE_FILES用于忽略源代码文件夹下的某些文件夹或者文件。
 
-当然，也可以把下面三个脚本集成为一个脚本`ast.sh`，通过`tools/ast.sh FB/A/D test`来使用脚本。
+## 二进制程序打包
 
-#### FBast.sh
-
-用于便捷测试抽象语法树的脚本,读取tests/test.c文件，生成抽象语法树.png，保存到result文件夹下(如果不存在，则自动创建)。
-
-使用指令 "chmod +x ./tools/FBast.sh" 给脚本权限
-
-使用方式 ./tools/FBast.sh test
-
-且test应在/minic/tests目录下,test为测试输入文件、输出图片的名字 不需要包含.c的后缀
-
-使用实例： "./tools/FBast.sh test1-1"
-
-"FBast.sh" 中的FB表示使用 flex bison
-
-#### Aast.sh
-
-用于便捷测试抽象语法树的脚本,读取tests/test.c文件，生成抽象语法树.png，保存到result文件夹下(如果不存在，则自动创建)。
-
-使用指令 "chmod +x ./tools/Aast.sh" 给脚本权限
-
-使用方式 ./tools/Aast.sh test
-
-且test应在/minic/tests目录下,test为测试输入文件、输出图片的名字。不需要包含.c的后缀
-
-使用实例： "./tools/Aast.sh test1-1"
-
-"Aast.sh" 中的A表示使用 antlr
-
-#### Dast.sh
-
-用于便捷测试抽象语法树的脚本,读取tests/test.c文件，生成抽象语法树.png，保存到result文件夹下(如果不存在，则自动创建)。
-
-使用指令 "chmod +x ./tools/Dast.sh" 给脚本权限
-
-使用方式 ./tools/Dast.sh test
-
-且test应在/minic/tests目录下,test为测试输入文件、输出图片的名字。不需要包含.c的后缀
-
-使用实例： "./tools/Dast.sh test1-1"
-
-"Dast.sh" 中的D表示使用 递归下降分析法
+可在VScode页面下的状态栏上单击Run Cpack即可在cmake-build-debug产生zip和tar.gz格式的压缩包，里面包含编译出的可执行程序。
