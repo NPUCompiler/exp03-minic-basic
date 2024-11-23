@@ -236,6 +236,7 @@ static ast_node * funcDef()
                     ast_node * formalParamsNode = nullptr;
 
                     // 创建函数定义的节点，孩子有类型，函数名，语句块和形参(实际上无)
+                    // create_func_def函数内会释放funcId中指向的标识符空间，切记，之后不要再释放，之前一定要是通过strdup函数或者malloc分配的空间
                     return create_func_def(funcReturnType, funcId, blockNode, formalParamsNode);
 
                 } else {

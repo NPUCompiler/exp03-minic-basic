@@ -86,10 +86,8 @@ FuncDef : T_INT T_ID T_L_PAREN T_R_PAREN Block  {
 		ast_node * formalParamsNode = nullptr;
 
 		// 创建函数定义的节点，孩子有类型，函数名，语句块和形参(实际上无)
+		// create_func_def函数内会释放funcId中指向的标识符空间，切记，之后不要再释放，之前一定要是通过strdup函数或者malloc分配的空间
         $$ = create_func_def(funcReturnType, funcId, blockNode, formalParamsNode);
-
-		// 对于字符型字面量的字符串空间需要释放，因词法用到了strdup进行了字符串空间的申请
-		free($2.id);
     }
     ;
 
