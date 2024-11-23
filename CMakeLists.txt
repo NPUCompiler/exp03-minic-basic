@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # 设置工程属性，如版本，开发语言等
-project(minic VERSION 1.0.0.2 LANGUAGES CXX)
+project(minic VERSION 1.0.0 LANGUAGES CXX)
 
 # 是否输出Bison语法分析时是否输出自动机， 默认输出
 # 如果修改为OFF，请删除cmake_build_debug后重新build
@@ -252,7 +252,7 @@ add_executable(${PROJECT_NAME}
 
 # 设置语言标准C++17，可根据需要调整
 set_target_properties(${PROJECT_NAME} PROPERTIES
-	CXX_STANDARD 20
+	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
 	CXX_STANDARD_REQUIRED ON
 )
@@ -351,3 +351,33 @@ add_custom_command(
 	WORKING_DIRECTORY
 	${ANTLR4_GEN_DIR}/..
 )
+
+# 源代码打包
+set(CPACK_SOURCE_GENERATOR "ZIP;TGZ")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}-src")
+
+# 忽略不需要源代码目录或文件
+set(CPACK_SOURCE_IGNORE_FILES
+	"/build/;" # 忽略 build 目录
+	"/cmake-build-.*/;" # cmake-build-开头的目录
+	"/.git/;" # 忽略 Git 仓库
+	"~$;" # 忽略临时文件（如编辑器产生的临时文件）
+	"/doc/;" # 忽略 doc 目录
+	"/frontend/antlr4/.antlr/;" # antlr自动产生的目录
+	"/.history/;" # 本地历史文件
+	"/tests/;" # 测试文件夹
+)
+
+# 二进制打包
+set(CPACK_GENERATOR "ZIP;TGZ")
+
+# 安装可执行程序，不要bin文件夹下
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
+
+# 设置打包的名字
+set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}-bin")
+
+# 设置包描述
+set(CPACK_PACKAGE_DESCRIPTION "minic基本版")
+
+include(CPack)
