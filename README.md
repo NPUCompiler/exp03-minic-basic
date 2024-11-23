@@ -245,7 +245,7 @@ arm-linux-gnueabihf-gcc -static -g -o tests/test1-1-1 tests/test1-1-1.s
 
 1. 这里必须用-static 进行静态编译，不依赖动态库，否则后续通过 qemu-arm-static 运行时会提示动态库找不到的错误
 2. 可通过网址<https://godbolt.org/>输入 C 语言源代码后查看各种目标后端的汇编。下图是选择 ARM GCC 11.4.0 的源代码与汇编对应。
-![godbolt 效果图](doc/figures/godbolt-test1-1-arm32-gcc.png)
+![godbolt 效果图](./doc/figures/godbolt-test1-1-arm32-gcc.png)
 
 ### 1.8.5. 运行可执行程序
 
