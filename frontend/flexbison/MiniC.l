@@ -33,14 +33,7 @@
 /* 不进行命令行交互，只能分析文件 */
 %option never-interactive
 
-%x COMMENT
 /* 辅助定义式或者宏，后面使用时带上大括号 */
-/* \040代表8进制的32的识别，也就是空格字符 */
-
-d           [0-9]
-l           [a-zA-Z]
-white       [\t\040]
-white_line  [\r\n]
 
 /* 正规式定义 */
 %%
@@ -73,24 +66,26 @@ white_line  [\r\n]
                 return T_RETURN;
             }
 
-{l}+({d}|{l})* {
+[a-zA-Z_]+[0-9a-zA-Z_]* {
                 // strdup 分配的空间需要在使用完毕后使用free手动释放，否则会造成内存泄漏
                 yylval.var_id.id = strdup(yytext);
                 yylval.var_id.lineno = yylineno;
                 return T_ID;
             }
 
-{white}+    {
+
+[\t\040]+   {
+                /* \040代表8进制的32的识别，也就是空格字符 */
                 // 空白符号忽略
                 ;
             }
 
-{white_line}+ {
+[\r\n]+     {
                 // 空白行忽略
                 ;
             }
 
-.	    {
+.           {
                 printf("Line %d: Invalid char %s\n", yylineno, yytext);
                 // 词法识别错误
                 return 257;

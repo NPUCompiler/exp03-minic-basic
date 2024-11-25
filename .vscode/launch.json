@@ -25,7 +25,7 @@
 			"name": "Debug IR vscode-lldb",
 			"type": "lldb",
 			"request": "launch",
-			"program": "${workspaceFolder}/cmake-build-debug/minic",
+			"program": "${workspaceFolder}/build/minic",
 			"args": ["-S", "-I", "-D", "-o", "tests/test2-2.ir", "tests/test2-2.c"],
 			"cwd": "${workspaceFolder}",
 			// 不需要编译时可注释掉
@@ -36,7 +36,7 @@
 			"name": "Debug IR",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/cmake-build-debug/minic",
+			"program": "${workspaceFolder}/build/minic",
 			"args": ["-S", "-D", "-I", "-o", "tests/test2-2.ir", "tests/test2-2.c"],
 			// 程序的入口（main函数的入口）是否停止
 			"stopAtEntry": true,
@@ -75,7 +75,7 @@
 			"name": "Debug AST",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/cmake-build-debug/minic",
+			"program": "${workspaceFolder}/build/minic",
 			"args": ["-S", "-A", "-T", "tests/test2-1.c"],
 			// 程序的入口（main函数的入口）是否停止
 			"stopAtEntry": true,
@@ -114,7 +114,7 @@
 			"name": "Debug Backend ARM32",
 			"type": "lldb",
 			"request": "launch",
-			"program": "${workspaceFolder}/cmake-build-debug/minic",
+			"program": "${workspaceFolder}/build/minic",
 			"args": ["-S", "-A", "-o", "tests/test2-2.s", "tests/test2-2.c"],
 			"cwd": "${workspaceFolder}",
 			// 不需要编译时可注释掉

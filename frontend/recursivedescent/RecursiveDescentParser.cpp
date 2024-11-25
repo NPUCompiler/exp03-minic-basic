@@ -23,6 +23,9 @@
 // 定义全局变量给词法分析使用，用于填充值
 RDSType rd_lval;
 
+// 词法识别的记号值，原始文本字符串
+extern std::string tokenValue;
+
 // 语法分析过程中的错误数目
 static int errno_num = 0;
 
