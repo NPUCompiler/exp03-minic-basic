@@ -29,28 +29,44 @@
 #include "Module.h"
 #include "getopt-port.h"
 
+///
 /// @brief 是否显示帮助信息
+///
 bool gShowHelp = false;
 
+///
 /// @brief 显示抽象语法树，非线性IR
-int gShowAST = 0;
+///
+bool gShowAST = false;
 
+///
 /// @brief 产生线性IR，线性IR，默认输出
-int gShowLineIR = 0;
+///
+bool gShowLineIR = false;
 
+///
 /// @brief 显示汇编
-int gShowASM = 0;
+///
+bool gShowASM = false;
 
+///
 /// @brief 输出中间IR，含汇编或者自定义IR等，默认输出线性IR
-int gShowSymbol = 0;
+///
+bool gShowSymbol = false;
 
+///
 /// @brief 前端分析器，默认选Flex和Bison
+///
 bool gFrontEndFlexBison = true;
 
+///
 /// @brief 前端分析器Antlr4，是否选中
+///
 bool gFrontEndAntlr4 = false;
 
+///
 /// @brief 前端分析器用递归下降分析法，是否选中
+///
 bool gFrontEndRecursiveDescentParsing = false;
 
 ///
@@ -74,9 +90,7 @@ std::string gOutputFile;
 /// @param exeName
 void showHelp(const std::string & exeName)
 {
-    std::cout << exeName + " -S [-T | -I] [-o output] source\n";
-    std::cout << exeName + " -S -A [-T | -I] [-o output] source\n";
-	std::cout << exeName + " -S -D [-T | -I] [-o output] source\n";
+    std::cout << exeName + " -S [-A | -D] [-T | -I] [-o output] source\n";
 }
 
 /// @brief 参数解析与有效性检查
@@ -87,13 +101,14 @@ int ArgsAnalysis(int argc, char * argv[])
 {
     int ch;
 
-    // 指定参数解析的选项，可识别-h、-o、-S、-T、-I、-A选项
-	// -S输出IR等，-T输出AST，-I输出中间IR
-	// -A指定按照antlr4进行词法与语法分析，不指定时按flex+bison执行
+    // 指定参数解析的选项，可识别-h、-o、-S、-T、-I、-A、-D等选项
+    // -S必须项，输出中间IR、抽象语法树或汇编
+    // -T指定时输出AST，-I输出中间IR，不指定则默认输出汇编
+    // -A指定按照antlr4进行词法与语法分析，-D指定按照递归下降分析法执行，不指定时按flex+bison执行
     // -o要求必须带有附加参数，指定输出的文件
     // -O要求必须带有附加整数，指明优化的级别
     // -t要求必须带有目标CPU，指明目标CPU的汇编
-    // -c选项在输出汇编时有效，会输出IR的指令作为对比
+    // -c选项在输出汇编时有效，附带输出IR指令内容
     const char options[] = "ho:STIADO:t:c";
 
     opterr = 1;
@@ -108,14 +123,14 @@ lb_check:
                 gOutputFile = optarg;
                 break;
             case 'S':
-                gShowSymbol = 1;
+                gShowSymbol = true;
                 break;
             case 'T':
-                gShowAST = 1;
+                gShowAST = true;
                 break;
             case 'I':
                 // 产生中间IR
-                gShowLineIR = 1;
+                gShowLineIR = true;
                 break;
                 break;
             case 'A':
@@ -167,32 +182,24 @@ lb_check:
         }
     }
 
-    // 必须指定输入文件和输出文件
-    if (gInputFile.length() == 0) {
+    // 必须指定要进行编译的输入文件
+    if (gInputFile.empty()) {
         return -1;
     }
 
     // 显示符号信息，必须指定，可选抽象语法树、中间IR(DragonIR)等显示
-    if (gShowSymbol != 1) {
+    if (!gShowSymbol) {
         return -1;
     }
 
-    int flag = gShowLineIR + gShowAST;
+    int flag = (int) gShowLineIR + (int) gShowAST;
 
-    if (gShowSymbol) {
-
-        if (flag == 0) {
-            // 没有指定，则输出汇编指令
-            gShowASM = 1;
-        } else if (flag != 1) {
-            // 线性中间IR、抽象语法树只能同时选择一个
-            return -1;
-        }
-    } else {
-        // 如果-S没有指定，但指定了-a等选项时，则失败
-        if (flag != 0) {
-            return -1;
-        }
+    if (0 == flag) {
+        // 没有指定，则输出汇编指令
+        gShowASM = true;
+    } else if (flag != 1) {
+        // 线性中间IR、抽象语法树只能同时选择一个
+        return -1;
     }
 
     // 没有指定输出文件则产生默认文件
@@ -200,11 +207,11 @@ lb_check:
 
         // 默认文件名
         if (gShowAST) {
-            gOutputFile = "ast.png";
+            gOutputFile = "output.png";
         } else if (gShowLineIR) {
-            gOutputFile = "ir.txt";
+            gOutputFile = "output.ir";
         } else {
-            gOutputFile = "asm.s";
+            gOutputFile = "output.s";
         }
     }
 
@@ -229,9 +236,6 @@ int compile(std::string inputFile, std::string outputFile)
     // 这里采用do {} while(0)架构的目的是如果处理出错可通过break退出循环，出口唯一
     // 在编译器编译优化时会自动去除，因为while恒假的缘故
     do {
-
-        // ! 请注意flex/bison与递归下降分析法使用了全局变量，因此
-        // ! 要多文件并行编译则需要改造，建议串行编译
 
         // 编译过程主要包括：
         // 1）词法语法分析生成AST
@@ -350,6 +354,7 @@ int compile(std::string inputFile, std::string outputFile)
 
         // 成功执行
         result = 0;
+
     } while (false);
 
     delete module;
