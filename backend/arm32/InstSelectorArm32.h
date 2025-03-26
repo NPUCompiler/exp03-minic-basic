@@ -68,28 +68,6 @@ protected:
     /// @param inst IR指令
     void translate_goto(Instruction * inst);
 
-    /// @brief 整数加法指令翻译成ARM32汇编
-    /// @param inst IR指令
-    void translate_add_int32(Instruction * inst);
-
-    /// @brief 整数减法指令翻译成ARM32汇编
-    /// @param inst IR指令
-    void translate_sub_int32(Instruction * inst);
-
-    /// @brief 二元操作指令翻译成ARM32汇编
-    /// @param inst IR指令
-    /// @param operator_name 操作码
-    void translate_two_operator(Instruction * inst, string operator_name);
-
-    /// @brief 函数调用指令翻译成ARM32汇编
-    /// @param inst IR指令
-    void translate_call(Instruction * inst);
-
-    ///
-    /// @brief 实参指令翻译成ARM32汇编
-    /// @param inst
-    ///
-    void translate_arg(Instruction * inst);
 
     ///
     /// @brief 输出IR指令
@@ -107,13 +85,6 @@ protected:
     ///
     SimpleRegisterAllocator & simpleRegisterAllocator;
 
-    ///
-    /// @brief 函数实参累计
-    ///
-    int32_t argCount = 0;
-
-    /// @brief 累计的实参个数
-    int32_t realArgCount = 0;
 
 public:
     /// @brief 构造函数

@@ -28,6 +28,12 @@ class PointerType : public Type {
     ///
     struct PointerTypeHasher final {
 
+        /// @brief Given a PointerType, returns a hash value for the type
+        ///        that is suitable for use in a std::unordered_map.
+        ///
+        /// @param[in] type The PointerType to hash
+        ///
+        /// @returns A hash value for the type
         size_t operator()(const PointerType & type) const noexcept
         {
             return std::hash<const Type *>{}(type.getPointeeType());
@@ -38,6 +44,13 @@ class PointerType : public Type {
     /// @brief 判断两者相等的结构体，提供等于函数
     ///
     struct PointerTypeEqual final {
+        /// @brief Checks if two PointerType objects are equal.
+        ///
+        /// @param[in] lhs  The first PointerType to compare
+        /// @param[in] rhs  The second PointerType to compare
+        ///
+        /// @returns true if the two PointerTypes are equal, false otherwise.
+        ///
         size_t operator()(const PointerType & lhs, const PointerType & rhs) const noexcept
         {
             return lhs.getPointeeType() == rhs.getPointeeType();
@@ -45,6 +58,11 @@ class PointerType : public Type {
     };
 
 public:
+    /// @brief PointerType的构造函数
+    /// @param[in] pointeeType 指针所指向的类型
+    ///
+    /// 该构造函数将Type的ID设置为PointerTypeID，并且
+    /// 保存pointeeType的指针到pointeeType成员变量
     explicit PointerType(const Type * pointeeType) : Type(PointerTyID)
     {
         this->pointeeType = pointeeType;

@@ -25,6 +25,13 @@ class Value;
 ///
 /// @brief  A Use represents the edge between a Value definition and its users.
 ///
+/// Use是Value和User之间的一个引用关系。每个Use对象持有一个Value的引用，并且知道这个Value是由哪个User使用的
+/// Use可以跟踪每个Value的所有使用情况，并且当Value被修改或删除时，可以更新所有引用它的地方
+///
+/// User和Use之间存在一个双向关系：
+/// User持有一个Use链表(成员uses)，每个Use指向一个Value
+/// Value持有一个User链表(成员uses)，每个User指向一个使用该Value的User对象
+///
 class Use {
 
 protected:

@@ -20,7 +20,7 @@
 #include "Type.h"
 
 ///
-/// @brief Label类型
+/// @brief LabelType 是一种特殊的 Type，它表示基本块（BasicBlock）标签的类型。也可用于Label指令的类型。
 ///
 class LabelType final : public Type {
 

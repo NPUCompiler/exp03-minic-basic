@@ -23,7 +23,11 @@
 #include "Use.h"
 
 ///
-/// @brief 本身代表一个Value，这个Value可通过那些操作数计算得到
+/// @brief 本身代表一个Value，这个Value可通过其中的操作数计算得到
+///
+/// User是LLVM IR中表示使用Value的类。
+/// User可以是指令(Instruction)、常量表达式(ConstantExpr)、全局变量(GlobalVariable)等。
+/// User持有对Value的引用，并且可以有多个Value作为其操作数(Operands)
 ///
 class User : public Value {
 

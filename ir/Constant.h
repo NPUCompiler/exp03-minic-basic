@@ -25,6 +25,13 @@
 /// ! 函数是常量，这是因为函数的地址运行时不可更改
 /// ! 全局变量也是常量，也是因为全局变量的地址运行时不可更改
 ///
+/// 常量为何继承User？
+/// 1) 常量可以引用其他值。Constant 并不仅仅是简单的字面值（如整数或浮点数），它们可以是更复杂的结构，如常量数组，常量表达式等
+/// 由于 User 类提供了管理 Value 操作数的能力（如 getOperand() 和 setOperand()），
+/// 让 Constant 继承 User 使得 LLVM 可以利用这套机制来管理 Constant 内部的操作数（即被引用的 Value）、
+/// 2）常量表达式（ConstantExpr）是特殊的 User，它们是由常量和指令组成的，因此它们也继承了 User 类
+/// 3) 方便统一管理 IR 层级结构，避免特殊处理
+///
 class Constant : public User {
 
 protected:

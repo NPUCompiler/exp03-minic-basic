@@ -56,7 +56,7 @@ enum class IRInstOperator {
 };
 
 ///
-/// @brief IR指令的基类, 指令自带值
+/// @brief IR指令的基类, 指令自带值，也就是常说的临时变量
 ///
 class Instruction : public User {
 
