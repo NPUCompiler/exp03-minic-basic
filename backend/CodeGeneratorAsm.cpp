@@ -13,8 +13,6 @@
 /// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
 /// </table>
 ///
-#include <cstdio>
-
 #include "CodeGenerator.h"
 #include "CodeGeneratorAsm.h"
 #include "Module.h"

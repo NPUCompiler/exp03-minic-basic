@@ -32,63 +32,63 @@
 ///
 /// @brief 是否显示帮助信息
 ///
-bool gShowHelp = false;
+static bool gShowHelp = false;
 
 ///
 /// @brief 显示抽象语法树，非线性IR
 ///
-bool gShowAST = false;
+static bool gShowAST = false;
 
 ///
 /// @brief 产生线性IR，线性IR，默认输出
 ///
-bool gShowLineIR = false;
+static bool gShowLineIR = false;
 
 ///
 /// @brief 显示汇编
 ///
-bool gShowASM = false;
+static bool gShowASM = false;
 
 ///
 /// @brief 输出中间IR，含汇编或者自定义IR等，默认输出线性IR
 ///
-bool gShowSymbol = false;
+static bool gShowSymbol = false;
 
 ///
 /// @brief 前端分析器，默认选Flex和Bison
 ///
-bool gFrontEndFlexBison = true;
+static bool gFrontEndFlexBison = true;
 
 ///
 /// @brief 前端分析器Antlr4，是否选中
 ///
-bool gFrontEndAntlr4 = false;
+static bool gFrontEndAntlr4 = false;
 
 ///
 /// @brief 前端分析器用递归下降分析法，是否选中
 ///
-bool gFrontEndRecursiveDescentParsing = false;
+static bool gFrontEndRecursiveDescentParsing = false;
 
 ///
 /// @brief 在输出汇编时是否输出中间IR作为注释
 ///
-bool gAsmAlsoShowIR = false;
+static bool gAsmAlsoShowIR = false;
 
 /// @brief 优化的级别，即-O后面的数字，默认为0
-int gOptLevel = 0;
+static int gOptLevel = 0;
 
 /// @brief 指定CPU目标架构，这里默认为ARM32
-std::string gCPUTarget = "ARM32";
+static std::string gCPUTarget = "ARM32";
 
 /// @brief 输入源文件
-std::string gInputFile;
+static std::string gInputFile;
 
 /// @brief 输出文件，不同的选项输出的内容不同
-std::string gOutputFile;
+static std::string gOutputFile;
 
 /// @brief 显示帮助
 /// @param exeName
-void showHelp(const std::string & exeName)
+static void showHelp(const std::string & exeName)
 {
     std::cout << exeName + " -S [-A | -D] [-T | -I] [-o output] source\n";
 }
@@ -97,7 +97,7 @@ void showHelp(const std::string & exeName)
 /// @param argc
 /// @param argv
 /// @return
-int ArgsAnalysis(int argc, char * argv[])
+static int ArgsAnalysis(int argc, char * argv[])
 {
     int ch;
 
@@ -223,7 +223,7 @@ lb_check:
 /// @return true 成功
 /// @return false 失败
 ///
-int compile(std::string inputFile, std::string outputFile)
+static int compile(std::string inputFile, std::string outputFile)
 {
     // 函数返回值，默认-1
     int result = -1;
@@ -339,6 +339,7 @@ int compile(std::string inputFile, std::string outputFile)
             if (gCPUTarget == "ARM32") {
                 // 输出面向ARM32的汇编指令
                 generator = new CodeGeneratorArm32(module);
+                generator->setShowLinearIR(gAsmAlsoShowIR);
                 generator->run(outputFile);
             } else {
                 // 不支持指定的CPU架构

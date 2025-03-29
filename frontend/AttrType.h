@@ -20,7 +20,7 @@
 ///
 /// @brief 基本类型枚举类
 ///
-enum class BasicType : int {
+enum class BasicType : std::int8_t {
     TYPE_NONE,  // 节点不存在类型
     TYPE_VOID,  // void型，仅用于函数返回值
     TYPE_INT,   // 整型

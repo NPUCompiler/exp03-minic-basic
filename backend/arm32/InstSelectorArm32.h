@@ -68,7 +68,6 @@ protected:
     /// @param inst IR指令
     void translate_goto(Instruction * inst);
 
-
     ///
     /// @brief 输出IR指令
     ///
@@ -85,6 +84,10 @@ protected:
     ///
     SimpleRegisterAllocator & simpleRegisterAllocator;
 
+    ///
+    /// @brief 显示IR指令内容
+    ///
+    bool showLinearIR = false;
 
 public:
     /// @brief 构造函数
@@ -96,7 +99,19 @@ public:
                       Function * _func,
                       SimpleRegisterAllocator & allocator);
 
+    ///
+    /// @brief 析构函数
+    ///
     ~InstSelectorArm32();
+
+    ///
+    /// @brief 设置是否输出线性IR的内容
+    /// @param show true显示，false显示
+    ///
+    void setShowLinearIR(bool show)
+    {
+        showLinearIR = show;
+    }
 
     /// @brief 指令选择
     void run();

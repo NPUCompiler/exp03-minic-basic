@@ -20,8 +20,9 @@
 ///
 void ScopeStack::enterScope()
 {
+    // 在栈顶新加入一层，没有变量
     std::unordered_map<std::string, Value *> valueMap;
-    valueStack.push_back(valueMap);
+    valueStack.emplace_back(valueMap);
 }
 
 ///
@@ -48,6 +49,7 @@ void ScopeStack::insertValue(Value * value)
 ///
 Value * ScopeStack::findCurrentScope(std::string name)
 {
+    // 在栈顶的作用域中查找，即当前作用域
     auto it = valueStack.back().find(name);
     if (it != valueStack.back().end()) {
         return it->second;
@@ -62,6 +64,7 @@ Value * ScopeStack::findCurrentScope(std::string name)
 ///
 Value * ScopeStack::findAllScope(std::string name)
 {
+    // 模拟栈操作，从栈顶开始查找
     for (auto it = valueStack.rbegin(); it != valueStack.rend(); ++it) {
         auto p = it->find(name);
         if (p != it->end()) {
@@ -73,7 +76,7 @@ Value * ScopeStack::findAllScope(std::string name)
 
 ///
 /// @brief 获取当前的作用域栈的层号
-/// @return int 层号
+/// @return int 层号，从0开始
 ///
 int ScopeStack::getCurrentScopeLevel()
 {

@@ -20,7 +20,7 @@
 class Function;
 
 /// @brief IR指令操作码
-enum class IRInstOperator {
+enum class IRInstOperator : std::int8_t {
 
     /// @brief 函数入口指令，对应函数的prologue，用户栈空间分配、寄存器保护等
     IRINST_OP_ENTRY,

@@ -30,11 +30,6 @@
 #include "ArgInstruction.h"
 #include "MoveInstruction.h"
 
-///
-/// @brief 引用main.c的全局变量，为了便于控制
-///
-extern bool gAsmAlsoShowIR;
-
 /// @brief 构造函数
 /// @param tab 符号表
 CodeGeneratorArm32::CodeGeneratorArm32(Module * _module) : CodeGeneratorAsm(_module)
@@ -136,6 +131,7 @@ void CodeGeneratorArm32::genCodeSection(Function * func)
 
     // 指令选择生成汇编指令
     InstSelectorArm32 instSelector(IrInsts, iloc, func, simpleRegisterAllocator);
+    instSelector.setShowLinearIR(this->showLinearIR);
     instSelector.run();
 
     // 删除无用的Label指令
@@ -148,7 +144,7 @@ void CodeGeneratorArm32::genCodeSection(Function * func)
     fprintf(fp, "%s:\n", func->getName().c_str());
 
     // 开启时输出IR指令作为注释
-    if (gAsmAlsoShowIR) {
+    if (this->showLinearIR) {
 
         // 输出有关局部变量的注释，便于查找问题
         for (auto localVar: func->getVarValues()) {
@@ -239,7 +235,7 @@ void CodeGeneratorArm32::adjustFormalParamInsts(Function * func)
     }
 
     // 根据ARM版C语言的调用约定，除前4个外的实参进行值传递，逆序入栈
-    int fp_esp = func->getMaxDep() + (int) func->getProtectedReg().size() * 4;
+    int64_t fp_esp = func->getMaxDep() + (func->getProtectedReg().size() * 4);
     for (int k = 4; k < (int) params.size(); k++) {
 
         // 目前假定变量大小都是4字节。实际要根据类型来计算

@@ -54,7 +54,7 @@ public:
     Value * findAllScope(std::string name);
 
     ///
-    /// @brief 离开作用域
+    /// @brief 进入作用域
     ///
     void enterScope();
 
@@ -65,7 +65,7 @@ public:
 
 protected:
     ///
-    /// @brief 变量作用域栈
+    /// @brief 变量作用域栈，最外层用vector来模拟栈，每一层用unordered_map来实现，变量名为key，变量为value
     ///
     std::vector<std::unordered_map<std::string, Value *>> valueStack;
 };

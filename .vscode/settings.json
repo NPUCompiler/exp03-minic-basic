@@ -28,8 +28,6 @@
 		"*.ipynb": "jupyter-notebook",
 		"*.pdf": "latex-workshop-pdf-hook"
 	},
-	"plantuml.server": "http://10.69.45.39:38880",
-	"plantuml.render": "PlantUMLServer",
 	"vsicons.dontShowNewVersionMessage": true,
 	"todo-tree.general.tags": ["BUG", "HACK", "FIXME", "TODO", "XXX", "[ ]", "[x]"],
 	"todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^\\s*(-|\\d+.))\\s*($TAGS)",
@@ -55,22 +53,6 @@
 	},
 	"debug.allowBreakpointsEverywhere": true,
 	"explorer.confirmDelete": false,
-	"?terminal.integrated.profiles.windows": "TODO: 请根据真实的路径修改clang64的路径",
-	"terminal.integrated.profiles.windows": {
-		"clang64": {
-			"path": "C:/LinuxEnv/msys64/msys2_shell.cmd",
-			"args": ["-defterm", "-clang64", "-no-start", "-here", "-shell", "zsh"]
-		},
-		"PowerShell": {
-			"source": "PowerShell",
-			"icon": "terminal-powershell"
-		},
-		"Command Prompt": {
-			"path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"],
-			"args": [],
-			"icon": "terminal-cmd"
-		}
-	},
 	"terminal.integrated.defaultProfile.windows": "Command Prompt",
 	"terminal.integrated.enableMultiLinePasteWarning": "auto",
 	"terminal.integrated.defaultProfile.osx": "zsh",
@@ -176,7 +158,7 @@
 		"@par 修改日志:",
 		"<table>",
 		"<tr><th>Date       <th>Version <th>Author  <th>Description",
-		"<tr><td>{date} <td>1.0     <td>zenglj  <td>内容",
+		"<tr><td>{date} <td>1.0     <td>XXXXX  <td>内容",
 		"</table>"
 	],
 	// 文件注释的组成及其排序

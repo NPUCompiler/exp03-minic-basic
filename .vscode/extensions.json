@@ -1,7 +1,6 @@
 {
 	"recommendations": [
 		"aaron-bond.better-comments",
-		"aldijav.golangwithdidi",
 		"alefragnani.bookmarks",
 		"alexcodercorp.comments",
 		"christian-kohler.path-intellisense",
@@ -72,7 +71,6 @@
 		"tamasfe.even-better-toml",
 		"techer.open-in-browser",
 		"timonwong.shellcheck",
-		"twxs.cmake",
 		"uctakeoff.vscode-counter",
 		"vadimcn.vscode-lldb",
 		"vincaslt.highlight-matching-tag",

@@ -269,9 +269,9 @@ sudo apt install -y clang-format clang-tidy
 
 ```shell
 # cmake根据CMakeLists.txt进行配置与检查，这里使用clang编译器并且是Debug模式
-cmake -B cmake-build-debug -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++
+cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++
 # cmake，其中--parallel说明是并行编译，也可用-j选项
-cmake --build cmake-build-debug --parallel
+cmake --build build --parallel
 ```
 
 ## 1.6. 使用方法
@@ -280,23 +280,23 @@ cmake --build cmake-build-debug --parallel
 
 ```shell
 
-./cmake-build-debug/minic -S -T -o ./tests/test1-1.png ./tests/test1-1.c
+./build/minic -S -T -o ./tests/test1-1.png ./tests/test1-1.c
 
-./cmake-build-debug/minic -S -T -A -o ./tests/test1-1.png ./tests/test1-1.c
+./build/minic -S -T -A -o ./tests/test1-1.png ./tests/test1-1.c
 
-./cmake-build-debug/minic -S -T -D -o ./tests/test1-1.png ./tests/test1-1.c
+./build/minic -S -T -D -o ./tests/test1-1.png ./tests/test1-1.c
 
-./cmake-build-debug/minic -S -I -o ./tests/test1-1.ir ./tests/test1-1.c
+./build/minic -S -I -o ./tests/test1-1.ir ./tests/test1-1.c
 
-./cmake-build-debug/minic -S -I -A -o ./tests/test1-1.ir ./tests/test1-1.c
+./build/minic -S -I -A -o ./tests/test1-1.ir ./tests/test1-1.c
 
-./cmake-build-debug/minic -S -I -D -o ./tests/test1-1.ir ./tests/test1-1.c
+./build/minic -S -I -D -o ./tests/test1-1.ir ./tests/test1-1.c
 
-./cmake-build-debug/minic -S -o ./tests/test1-1.s ./tests/test1-1.c
+./build/minic -S -o ./tests/test1-1.s ./tests/test1-1.c
 
-./cmake-build-debug/minic -S -A -o ./tests/test1-1.s ./tests/test1-1.c
+./build/minic -S -A -o ./tests/test1-1.s ./tests/test1-1.c
 
-./cmake-build-debug/minic -S -D -o ./tests/test1-1.s ./tests/test1-1.c
+./build/minic -S -D -o ./tests/test1-1.s ./tests/test1-1.c
 
 ```
 
@@ -392,7 +392,7 @@ tests 目录下存放了一些简单的测试用例。
 
 ```shell
 # 翻译 test1-1.c 成 ARM32 汇编
-./cmake-build-debug/minic -S -I -o tests/test1-1.ir tests/test1-1.txt
+./build/minic -S -I -o tests/test1-1.ir tests/test1-1.txt
 ./IRCompiler -R tests/test1-1.ir
 ```
 
@@ -403,7 +403,7 @@ tests 目录下存放了一些简单的测试用例。
 
 ```shell
 # 翻译 test1-1.c 成 ARM32 汇编
-./cmake-build-debug/minic -S -o tests/test1-1-0.s tests/test1-1.c
+./build/minic -S -o tests/test1-1-0.s tests/test1-1.c
 # 把 test1-1.c 通过 arm 版的交叉编译器 gcc 翻译成汇编
 arm-linux-gnueabihf-gcc -S -o tests/test1-1-1.s tests/test1-1.c
 ```
@@ -513,19 +513,19 @@ c
 
 ## 1.12. 源程序打包
 
-在执行前，请务必通过cmake进行build成功，这样会在cmake-build-debug目录下生成CPackSourceConfig.cmake文件。
+在执行前，请务必通过cmake进行build成功，这样会在build目录下生成CPackSourceConfig.cmake文件。
 
-进入cmake-build-debug目录下执行如下的命令可产生源代码压缩包，用于实验源代码的提交
+进入build目录下执行如下的命令可产生源代码压缩包，用于实验源代码的提交
 
 ```shell
-cd cmake-build-debug
+cd build
 cpack --config CPackSourceConfig.cmake
 ```
 
-在cmake-build-debug目录下默认会产生zip和tar.gz格式的文件。
+在build目录下默认会产生zip和tar.gz格式的文件。
 
 可根据需要调整CMakeLists.txt文件的CPACK_SOURCE_IGNORE_FILES用于忽略源代码文件夹下的某些文件夹或者文件。
 
 ## 1.13. 二进制程序打包
 
-可在VScode页面下的状态栏上单击Run Cpack即可在cmake-build-debug产生zip和tar.gz格式的压缩包，里面包含编译出的可执行程序。
+可在VScode页面下的状态栏上单击Run Cpack即可在build产生zip和tar.gz格式的压缩包，里面包含编译出的可执行程序。

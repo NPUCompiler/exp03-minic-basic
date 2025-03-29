@@ -36,15 +36,31 @@ public:
     /// @return true：成功，false：失败
     bool run(std::string outFileName);
 
+    ///
+    /// @brief 设置是否显示IR指令内容
+    /// @param show true：显示，false：不显示
+    ///
+    void setShowLinearIR(bool show)
+    {
+        this->showLinearIR = show;
+    }
+
 protected:
     /// @brief 代码产生器运行，结果保存到指定的文件中
     /// @param fp 输出内容所在文件的指针
     /// @return true：成功，false：失败
     virtual bool run() = 0;
 
-    /// @brief 符号表
+    ///
+    /// @brief 一个C语言的文件对应一个Module
+    ///
     Module * module;
 
     /// @brief 输出文件指针
     FILE * fp = nullptr;
+
+    ///
+    /// @brief 显示IR指令内容
+    ///
+    bool showLinearIR = false;
 };
