@@ -529,3 +529,9 @@ cpack --config CPackSourceConfig.cmake
 ## 1.13. 二进制程序打包
 
 可在VScode页面下的状态栏上单击Run Cpack即可在build产生zip和tar.gz格式的压缩包，里面包含编译出的可执行程序。
+
+## 1.14 IR的类型组织图
+
+如下图所示，描述的是Value、User、Use、Instruction等的类图。
+
+![IR的类图](doc/figures/Value-User-Use.svg)
