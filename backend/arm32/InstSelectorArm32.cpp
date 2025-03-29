@@ -141,7 +141,7 @@ void InstSelectorArm32::translate_entry(Instruction * inst)
         if (first) {
             protectedRegStr = PlatformArm32::regName[regno];
             first = false;
-        } else if (!first) {
+        } else {
             protectedRegStr += "," + PlatformArm32::regName[regno];
         }
     }
@@ -169,12 +169,7 @@ void InstSelectorArm32::translate_exit(Instruction * inst)
     auto & protectedRegStr = func->getProtectedRegStr();
 
     // 恢复栈空间
-    iloc.inst("add",
-              PlatformArm32::regName[ARM32_FP_REG_NO],
-              PlatformArm32::regName[ARM32_FP_REG_NO],
-              iloc.toStr(func->getMaxDep()));
-
-    iloc.inst("mov", "sp", PlatformArm32::regName[ARM32_FP_REG_NO]);
+    iloc.inst("mov", "sp", "fp");
 
     // 保护寄存器的恢复
     if (!protectedRegStr.empty()) {

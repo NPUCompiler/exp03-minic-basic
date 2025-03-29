@@ -135,7 +135,7 @@ void CodeGeneratorArm32::genCodeSection(Function * func)
     instSelector.run();
 
     // 删除无用的Label指令
-    iloc.deleteUsedLabel();
+    iloc.deleteUnusedLabel();
 
     // ILOC代码输出为汇编代码
     fprintf(fp, ".align %d\n", func->getAlignment());
@@ -235,7 +235,7 @@ void CodeGeneratorArm32::adjustFormalParamInsts(Function * func)
     }
 
     // 根据ARM版C语言的调用约定，除前4个外的实参进行值传递，逆序入栈
-    int64_t fp_esp = func->getMaxDep() + (func->getProtectedReg().size() * 4);
+    int64_t fp_esp = func->getProtectedReg().size() * 4;
     for (int k = 4; k < (int) params.size(); k++) {
 
         // 目前假定变量大小都是4字节。实际要根据类型来计算
@@ -257,6 +257,7 @@ void CodeGeneratorArm32::adjustFuncCallInsts(Function * func)
     auto & insts = func->getInterCode().getInsts();
 
     // 函数返回值用R0寄存器，若函数调用有返回值，则赋值R0到对应寄存器
+    // 通过栈传递的实参，采用SP + 偏移的方式殉职，偏移肯定非负。
     for (auto pIter = insts.begin(); pIter != insts.end(); pIter++) {
 
         // 检查是否是函数调用指令，并且含有返回值
@@ -343,16 +344,20 @@ void CodeGeneratorArm32::adjustFuncCallInsts(Function * func)
 /// @param func 要处理的函数
 void CodeGeneratorArm32::stackAlloc(Function * func)
 {
+    // 栈内分配的空间除了寄存器保护所分配的空间之外，还需要管理如下的空间
+    // (1) 没有指派寄存器的局部变量、形参或临时变量的栈内分配
+    // (2) 函数调用时需要栈内传递的实参
+    // (3) 函数内定义的数组变量需要在栈内分配
+    // (4) 函数内定义的静态变量空间分配按静态分配处理
+
     // 遍历函数内的所有指令，查找没有寄存器分配的变量，然后进行栈内空间分配
 
-    // 这里对临时变量和局部变量都在栈上进行分配,但形参对应实参的临时变量(FormalParam类型)不需要考虑
+    // 这里对临时变量和局部变量都在栈上进行分配，采用FP+偏移的寻址方式，偏移为负数
 
     int32_t sp_esp = 0;
 
-    // 获取函数变量列表
-    std::vector<LocalVariable *> & vars = func->getVarValues();
-
-    for (auto var: vars) {
+    // 遍历函数变量列表
+    for (auto var: func->getVarValues()) {
 
         // 对于简单类型的寄存器分配策略，假定临时变量和局部变量都保存在栈中，属于内存
         // 而对于图着色等，临时变量一般是寄存器，局部变量也可能修改为寄存器
@@ -367,7 +372,10 @@ void CodeGeneratorArm32::stackAlloc(Function * func)
             int32_t size = var->getType()->getSize();
 
             // 32位ARM平台按照4字节的大小整数倍分配局部变量
-            size += (4 - size % 4) % 4;
+            size = (size + 3) & ~3;
+
+            // 累计当前作用域大小
+            sp_esp += size;
 
             // 这里要注意检查变量栈的偏移范围。一般采用机制寄存器+立即数方式间接寻址
             // 若立即数满足要求，可采用基址寄存器+立即数变量的方式访问变量
@@ -375,23 +383,23 @@ void CodeGeneratorArm32::stackAlloc(Function * func)
             // 之后需要对所有使用到该Value的指令在寄存器分配前要变换。
 
             // 局部变量偏移设置
-            var->setMemoryAddr(ARM32_FP_REG_NO, sp_esp);
-
-            // 累计当前作用域大小
-            sp_esp += size;
+            var->setMemoryAddr(ARM32_FP_REG_NO, -sp_esp);
         }
     }
 
     // 遍历指令中临时变量
     for (auto inst: func->getInterCode().getInsts()) {
 
-        if (inst->hasResultValue()) {
-            // 有值
+        if (inst->hasResultValue() && (inst->getRegId() == -1)) {
+            // 有值，并且没有分配寄存器
 
             int32_t size = inst->getType()->getSize();
 
             // 32位ARM平台按照4字节的大小整数倍分配局部变量
-            size += (4 - size % 4) % 4;
+            size = (size + 3) & ~3;
+
+            // 累计当前作用域大小
+            sp_esp += size;
 
             // 这里要注意检查变量栈的偏移范围。一般采用机制寄存器+立即数方式间接寻址
             // 若立即数满足要求，可采用基址寄存器+立即数变量的方式访问变量
@@ -399,14 +407,19 @@ void CodeGeneratorArm32::stackAlloc(Function * func)
             // 之后需要对所有使用到该Value的指令在寄存器分配前要变换。
 
             // 局部变量偏移设置
-            inst->setMemoryAddr(ARM32_FP_REG_NO, sp_esp);
-
-            // 累计当前作用域大小
-            sp_esp += size;
+            inst->setMemoryAddr(ARM32_FP_REG_NO, -sp_esp);
         }
     }
 
-    // 设置函数的最大栈帧深度，在加上实参内存传值的空间
-    // 请注意若支持浮点数，则必须保持栈内空间8字节对齐
+    // 通过栈传递的实参，ARM32的前四个通过寄存器传递
+    int maxFuncCallArgCnt = func->getMaxFuncCallArgCnt();
+    if (maxFuncCallArgCnt > 4) {
+        sp_esp += (maxFuncCallArgCnt - 4) * 4;
+    }
+
+    // 只有int类型时可以4字节对齐，支持浮点或者向量运算时要16字节对齐
+    // sp_esp = (sp_esp + 15) & ~15;
+
+    // 设置函数的最大栈帧深度，没有考虑寄存器保护的空间大小
     func->setMaxDep(sp_esp);
 }

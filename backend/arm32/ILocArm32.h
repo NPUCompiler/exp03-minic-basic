@@ -214,5 +214,5 @@ public:
     void outPut(FILE * file, bool outputEmpty = false);
 
     /// @brief 删除无用的Label指令
-    void deleteUsedLabel();
+    void deleteUnusedLabel();
 };
