@@ -108,7 +108,16 @@ int32_t Value::getScopeLevel()
 ///
 int32_t Value::getRegId()
 {
-    return -1;
+    return regId;
+}
+
+///
+/// @brief 设置分配的寄存器编号
+/// @param regId 寄存器编号
+///
+void Value::setRegId(int32_t _regId)
+{
+    regId = _regId;
 }
 
 ///

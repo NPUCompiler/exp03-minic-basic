@@ -14,7 +14,9 @@
 /// </table>
 ///
 #include <algorithm>
+#include <cassert>
 #include "SimpleRegisterAllocator.h"
+#include "Value.h"
 
 ///
 /// @brief Construct a new Simple Register Allocator object
@@ -27,65 +29,73 @@ SimpleRegisterAllocator::SimpleRegisterAllocator()
 /// @return int 寄存器编号
 /// @param no 指定的寄存器编号
 ///
-int SimpleRegisterAllocator::Allocate(Value * var, int32_t no)
+std::pair<int32_t, Value *> SimpleRegisterAllocator::Allocate(Value * var, int32_t no)
 {
-    if (var && (var->getLoadRegId() != -1)) {
-        // 该变量已经分配了Load寄存器了，不需要再次分配
-        return var->getLoadRegId();
-    }
-
     int32_t regno = -1;
+    Value * spillValue = nullptr;
 
-    // 尝试指定的寄存器是否可用
-    if ((no != -1) && !regBitmap.test(no)) {
+    // 指定要分配的寄存器，则检查是否被占用；若占用则先溢出后分配，否则直接分配
+    // 如果没有指定寄存器，则从小到大分配一个寄存器
+    if (no != -1) {
 
-        // 可用
-        regno = no;
+        // 指定的Value已经分配了该寄存器，直接返回即可
+        if (var && (var->getRegId() == no)) {
+            return {no, spillValue};
+        }
+
+        // 指定的寄存器没有被占用，则直接分配
+        // 若被占用，则必须要先溢出占用该寄存器的变量，再次分配
+        if (!regBitmap.test(no)) {
+
+            regno = no;
+        }
+
     } else {
-
-        // 查询空闲的寄存器
+        //  从小到大分配一个寄存器
         for (int k = 0; k < PlatformArm32::maxUsableRegNum; ++k) {
-
             if (!regBitmap.test(k)) {
-
-                // 找到空闲寄存器
                 regno = k;
                 break;
             }
         }
     }
 
-    if (regno != -1) {
-
-        // 找到空闲的寄存器
-
-        // 占用
-        bitmapSet(regno);
-
-    } else {
+    if (regno == -1) {
 
         // 没有可用的寄存器分配，需要溢出一个变量的寄存器
 
-        // 溢出的策略：选择最迟加入队列的变量
-        Value * oldestVar = regValues.front();
+        // 查找占用该寄存器的变量，该变量需要溢出
+        if (no != -1) {
+            // 看指定的寄存器编号被那个Value占用
+            spillValue = free(no);
+        } else {
+            // 释放最早使用寄存器的变量进行溢出
+            spillValue = free(regValues[0]->getRegId());
+        }
 
-        // 获取Load寄存器编号，设置该变量不再占用Load寄存器
-        regno = oldestVar->getLoadRegId();
+        if (!spillValue) {
+            // 肯定有溢出的Value，但这里没有，异常
+            assert(false && "No available register to spill");
+            return {-1, spillValue};
+        }
 
-        // 设置该变量不再占用寄存器
-        oldestVar->setLoadRegId(-1);
+        // 获取到寄存器编号
+        regno = spillValue->getRegId();
 
-        // 从队列中删除
-        regValues.erase(regValues.begin());
+        // 保存溢出的Value
+        spillValues.push_back(spillValue);
     }
 
     if (var) {
-        // 加入新的变量
-        var->setLoadRegId(regno);
+        // 分配寄存器给指定的Value
+        var->setRegId(regno);
         regValues.push_back(var);
     }
 
-    return regno;
+    // 设置寄存器被占用
+    bitmapSet(regno);
+
+    return {regno, spillValue};
 }
 
 ///
@@ -112,39 +122,39 @@ void SimpleRegisterAllocator::Allocate(int32_t no)
 ///
 void SimpleRegisterAllocator::free(Value * var)
 {
-    if (var && (var->getLoadRegId() != -1)) {
-
-        // 清除该索引的寄存器，变得可使用
-        regBitmap.reset(var->getLoadRegId());
-        regValues.erase(std::find(regValues.begin(), regValues.end(), var));
-        var->setLoadRegId(-1);
-    }
+    // 清除该索引的寄存器，变得可使用
+    free(var->getRegId());
 }
 
 ///
 /// @brief 将寄存器no标记为空闲状态
 /// @param no 寄存器编号
 ///
-void SimpleRegisterAllocator::free(int32_t no)
+Value * SimpleRegisterAllocator::free(int32_t no)
 {
+    Value * freeValue = nullptr;
+
     // 无效寄存器，什么都不做，直接返回
-    if (no == -1) {
-        return;
+    if (no < 0) {
+        return nullptr;
     }
 
     // 清除该索引的寄存器，变得可使用
     regBitmap.reset(no);
 
     // 查找寄存器编号
-    auto pIter = std::find_if(regValues.begin(), regValues.end(), [=](auto val) {
-        return val->getLoadRegId() == no; // 存器编号与 no 匹配
+    auto pIter = std::find_if(regValues.begin(), regValues.end(), [=](Value * val) {
+        return val->getRegId() == no; // 存器编号与 no 匹配
     });
 
     if (pIter != regValues.end()) {
         // 查找到，则清除，并设置为-1
-        (*pIter)->setLoadRegId(-1);
+        freeValue = *pIter;
+        freeValue->setRegId(-1);
         regValues.erase(pIter);
     }
+
+    return freeValue;
 }
 
 ///

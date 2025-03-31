@@ -39,15 +39,6 @@ public:
     // }
 
     ///
-    /// @brief 获得分配的寄存器编号或ID
-    /// @return int32_t 寄存器编号
-    ///
-    int32_t getRegId() override
-    {
-        return regId;
-    }
-
-    ///
     /// @brief @brief 如是内存变量型Value，则获取基址寄存器和偏移
     /// @param regId 寄存器编号
     /// @param offset 相对偏移
@@ -99,21 +90,7 @@ public:
         this->loadRegNo = regId;
     }
 
-    ///
-    /// @brief 设置寄存器编号
-    /// @param _regId 寄存器编号
-    ///
-    void setRegId(int32_t _regId)
-    {
-        this->regId = _regId;
-    }
-
 private:
-    ///
-    /// @brief 寄存器编号，-1表示没有分配寄存器，大于等于0代表寄存器分配后用寄存器寻址
-    ///
-    int32_t regId = -1;
-
     ///
     /// @brief 变量在栈内的偏移量，对于全局变量默认为0，临时变量没有意义
     ///

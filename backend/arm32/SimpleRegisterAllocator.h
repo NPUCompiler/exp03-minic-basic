@@ -36,7 +36,7 @@ public:
     /// @param no 指定的寄存器编号
     /// @return int 寄存器编号
     ///
-    int Allocate(Value * var = nullptr, int32_t no = -1);
+    std::pair<int32_t, Value *> Allocate(Value * var = nullptr, int32_t no = -1);
 
     ///
     /// @brief 强制占用一个指定的寄存器。如果寄存器被占用，则强制寄存器关联的变量溢出
@@ -54,7 +54,7 @@ public:
     /// @brief 将寄存器no标记为空闲状态
     /// @param no 寄存器编号
     ///
-    void free(int32_t);
+    Value * free(int32_t);
 
 protected:
     ///
@@ -73,6 +73,11 @@ protected:
     /// @brief 寄存器被那个Value占用。按照时间次序加入
     ///
     std::vector<Value *> regValues;
+
+    ///
+    /// @brief 需要溢出的变量
+    ///
+    std::vector<Value *> spillValues;
 
     ///
     /// @brief 使用过的所有寄存器编号

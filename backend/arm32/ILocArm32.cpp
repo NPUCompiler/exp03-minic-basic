@@ -289,12 +289,10 @@ void ILocArm32::load_base(int rs_reg_no, int base_reg_no, int offset)
     std::string rsReg = PlatformArm32::regName[rs_reg_no];
     std::string base = PlatformArm32::regName[base_reg_no];
 
-    if (PlatformArm32::isDisp(offset)) {
+    if (offset && PlatformArm32::isDisp(offset)) {
         // 有效的偏移常量
-        if (offset) {
-            // [fp,#-16] [fp]
-            base += "," + toStr(offset);
-        }
+        // [fp,#-16] [fp]
+        base += "," + toStr(offset);
     } else {
 
         // ldr r8,=-4096
@@ -321,14 +319,12 @@ void ILocArm32::store_base(int src_reg_no, int base_reg_no, int disp, int tmp_re
 {
     std::string base = PlatformArm32::regName[base_reg_no];
 
-    if (PlatformArm32::isDisp(disp)) {
+    if (disp && PlatformArm32::isDisp(disp)) {
         // 有效的偏移常量
 
         // 若disp为0，则直接采用基址，否则采用基址+偏移
         // [fp,#-16] [fp]
-        if (disp) {
-            base += "," + toStr(disp);
-        }
+        base += "," + toStr(disp);
     } else {
         // 先把立即数赋值给指定的寄存器tmpReg，然后采用基址+寄存器的方式进行
 
@@ -440,23 +436,18 @@ void ILocArm32::store_var(int src_reg_no, Value * dest_var, int tmp_reg_no)
 {
     // 被保存目标变量肯定不是常量
 
-    if (dest_var->getRegId() != -1) {
+    // -1表示非寄存器，其他表示寄存器的索引值
+    int dest_reg_id = dest_var->getRegId();
 
-        // 寄存器变量
+    if ((dest_reg_id != -1) && (src_reg_no != dest_reg_id)) {
 
-        // -1表示非寄存器，其他表示寄存器的索引值
-        int dest_reg_id = dest_var->getRegId();
+        // 寄存器变量, 寄存器不一样才需要mov操作
 
-        // 寄存器不一样才需要mov操作
-        if (src_reg_no != dest_reg_id) {
-
-            // mov r2,r8 | 这里有优化空间——消除r8
-            emit("mov", PlatformArm32::regName[dest_reg_id], PlatformArm32::regName[src_reg_no]);
-        }
+        // mov r2,r8 | 这里有优化空间——消除r8
+        emit("mov", PlatformArm32::regName[dest_reg_id], PlatformArm32::regName[src_reg_no]);
 
     } else if (Instanceof(globalVar, GlobalVariable *, dest_var)) {
         // 全局变量
-
         // 读取符号的地址到寄存器r10
         load_symbol(tmp_reg_no, globalVar->getName());
 

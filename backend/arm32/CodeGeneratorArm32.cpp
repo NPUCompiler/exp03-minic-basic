@@ -179,7 +179,7 @@ void CodeGeneratorArm32::registerAllocation(Function * func)
         return;
     }
 
-    // 最简单/朴素的寄存器分配策略：局部变量和临时变量都保存在栈内，全局变量在静态存储.data区中
+    // 最简单/朴素的寄存器分配策略：局部变量都保存在栈内，全局变量在静态存储.data区中
     // R0,R1,R2和R3寄存器不需要保护，可直接使用
     // SP寄存器预留，不需要保护，但需要保证值的正确性
     // R4-R10, fp(11), lx(14)都需要保护，没有函数调用的函数可不用保护lx寄存器
@@ -188,8 +188,8 @@ void CodeGeneratorArm32::registerAllocation(Function * func)
     //  (2) LX寄存器用于函数调用，即R14。没有函数调用的函数可不用保护lx寄存器
     //  (3) R10寄存器用于立即数过大时要通过寄存器寻址，这里简化处理进行预留
 
+    // 至少有FP和LX寄存器需要保护
     std::vector<int32_t> & protectedRegNo = func->getProtectedReg();
-    protectedRegNo.push_back(ARM32_TMP_REG_NO);
     protectedRegNo.push_back(ARM32_FP_REG_NO);
     if (func->getExistFuncCall()) {
         protectedRegNo.push_back(ARM32_LX_REG_NO);
@@ -265,27 +265,43 @@ void CodeGeneratorArm32::adjustFuncCallInsts(Function * func)
 
             // 实参前四个要寄存器传值，其它参数通过栈传递
 
+            int32_t argNum = callInst->getOperandsNum();
+
             // 前四个的后面参数采用栈传递
             int esp = 0;
-            for (int32_t k = 4; k < callInst->getOperandsNum(); k++) {
+            for (int32_t k = 4; k < argNum; k++) {
 
+                // 获取实参的值
                 auto arg = callInst->getOperand(k);
 
-                // 新建一个内存变量，用于栈传值到形参变量中
-                LocalVariable * newVal = func->newLocalVarValue(IntegerType::getTypeInt());
+                // 栈帧空间（低地址在前，高地址在后）
+                // --------------------- sp
+                // 实参栈传递的空间（排除寄存器传递的实参空间）
+                // ---------------------
+                // 需要保存在栈中的局部变量或临时变量或形参对应变量空间
+                // --------------------- fp
+                // 保护寄存器的空间
+                // ---------------------
+
+                // 新建一个内存变量，把实参的值保存到栈中，以便栈传值，其寻址为SP + 非负偏移
+                MemVariable * newVal = func->newMemVariable(IntegerType::getTypeInt());
                 newVal->setMemoryAddr(ARM32_SP_REG_NO, esp);
                 esp += 4;
 
+                // 引入赋值指令，把实参的值保存到内存变量上
                 Instruction * assignInst = new MoveInstruction(func, newVal, arg);
 
+                // 更换实参变量为内存变量
                 callInst->setOperand(k, newVal);
 
+                // 赋值指令插入到函数调用指令的前面
                 // 函数调用指令前插入后，pIter仍指向函数调用指令
                 pIter = insts.insert(pIter, assignInst);
                 pIter++;
             }
 
-            for (int k = 0; k < callInst->getOperandsNum() && k < 4; k++) {
+            // ARM32的函数调用约定，前四个参数通过寄存器传递
+            for (int k = 0; k < argNum && k < 4; k++) {
 
                 // 检查实参的类型是否是临时变量。
                 // 如果是临时变量，该变量可更改为寄存器变量即可，或者设置寄存器号
@@ -296,7 +312,8 @@ void CodeGeneratorArm32::adjustFuncCallInsts(Function * func)
                     // 则说明寄存器已经是实参传递的寄存器，不用创建赋值指令
                     continue;
                 } else {
-                    // 创建临时变量，指定寄存器
+
+                    // 把实参的值通过move指令传递给寄存器
 
                     Instruction * assignInst =
                         new MoveInstruction(func, PlatformArm32::intRegVal[k], callInst->getOperand(k));
@@ -309,14 +326,16 @@ void CodeGeneratorArm32::adjustFuncCallInsts(Function * func)
                 }
             }
 
+#if 0
             for (int k = 0; k < callInst->getOperandsNum(); k++) {
 
                 auto arg = callInst->getOperand(k);
 
-                // 再产生ARG指令
+                // 产生ARG指令
                 pIter = insts.insert(pIter, new ArgInstruction(func, arg));
                 pIter++;
             }
+#endif
 
             // 有arg指令后可不用参数，展示不删除
             // args.clear();
@@ -351,6 +370,15 @@ void CodeGeneratorArm32::stackAlloc(Function * func)
     // (4) 函数内定义的静态变量空间分配按静态分配处理
 
     // 遍历函数内的所有指令，查找没有寄存器分配的变量，然后进行栈内空间分配
+
+    // 栈帧空间
+    // --------------------- sp
+    // 实参栈传递的空间（排除寄存器传递的实参空间）
+    // ---------------------
+    // 需要保存在栈中的局部变量或临时变量或形参对应变量空间
+    // --------------------- fp
+    // 保护寄存器的空间
+    // ---------------------
 
     // 这里对临时变量和局部变量都在栈上进行分配，采用FP+偏移的寻址方式，偏移为负数
 

@@ -13,7 +13,9 @@
 /// <tr><td>2024-11-21 <td>1.0     <td>zenglj  <td>新做
 /// </table>
 ///
+#include <cstdint>
 #include <cstdio>
+#include <tuple>
 
 #include "Common.h"
 #include "ILocArm32.h"
@@ -151,7 +153,10 @@ void InstSelectorArm32::translate_entry(Instruction * inst)
     }
 
     // 为fun分配栈帧，含局部变量、函数调用值传递的空间等
-    iloc.allocStack(func, ARM32_TMP_REG_NO);
+    int32_t tmp_reg_no;
+    std::tie(tmp_reg_no, std::ignore) = simpleRegisterAllocator.Allocate();
+    iloc.allocStack(func, tmp_reg_no);
+    simpleRegisterAllocator.free(tmp_reg_no);
 }
 
 /// @brief 函数出口指令翻译成ARM32汇编
@@ -189,12 +194,18 @@ void InstSelectorArm32::translate_assign(Instruction * inst)
     int32_t arg1_regId = arg1->getRegId();
     int32_t result_regId = result->getRegId();
 
+    int32_t temp_regno, tmp_reg_no;
+
     if (arg1_regId != -1) {
         // 寄存器 => 内存
         // 寄存器 => 寄存器
 
         // r8 -> rs 可能用到r9
-        iloc.store_var(arg1_regId, result, ARM32_TMP_REG_NO);
+        std::tie(tmp_reg_no, std::ignore) = simpleRegisterAllocator.Allocate();
+
+        iloc.store_var(arg1_regId, result, tmp_reg_no);
+
+        simpleRegisterAllocator.free(tmp_reg_no);
     } else if (result_regId != -1) {
         // 内存变量 => 寄存器
 
@@ -202,14 +213,17 @@ void InstSelectorArm32::translate_assign(Instruction * inst)
     } else {
         // 内存变量 => 内存变量
 
-        int32_t temp_regno = simpleRegisterAllocator.Allocate();
+        // 肯定有可以分配的寄存器，若没有则会溢出其它的变量来获取寄存器
+        std::tie(temp_regno, std::ignore) = simpleRegisterAllocator.Allocate();
+        std::tie(tmp_reg_no, std::ignore) = simpleRegisterAllocator.Allocate();
 
         // arg1 -> r8
         iloc.load_var(temp_regno, arg1);
 
         // r8 -> rs 可能用到r9
-        iloc.store_var(temp_regno, result, ARM32_TMP_REG_NO);
+        iloc.store_var(temp_regno, result, tmp_reg_no);
 
         simpleRegisterAllocator.free(temp_regno);
+        simpleRegisterAllocator.free(tmp_reg_no);
     }
 }
