@@ -353,7 +353,7 @@ add_custom_command(
 )
 
 # 源代码打包
-set(CPACK_SOURCE_GENERATOR "ZIP;TGZ")
+set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}-src")
 
 # 忽略不需要源代码目录或文件
@@ -369,7 +369,7 @@ set(CPACK_SOURCE_IGNORE_FILES
 )
 
 # 二进制打包
-set(CPACK_GENERATOR "ZIP;TGZ")
+set(CPACK_GENERATOR "TGZ")
 
 # 安装可执行程序，不要bin文件夹下
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
