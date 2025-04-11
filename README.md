@@ -408,7 +408,7 @@ tests 目录下存放了一些简单的测试用例。
 arm-linux-gnueabihf-gcc -S -o tests/test1-1-1.s tests/test1-1.c
 ```
 
-第一条命令通过minic编译器来生成的汇编test1-1-0.s
+第一条命令通过minic编译器来生成的汇编test1-1.s
 第二条指令是通过arm-linux-gnueabihf-gcc编译器生成的汇编语言test1-1-1.s。
 
 在调试运行时可通过对比检查所实现编译器的问题。
