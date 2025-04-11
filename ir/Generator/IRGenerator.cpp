@@ -149,8 +149,7 @@ bool IRGenerator::ir_function_define(ast_node * node)
     ast_node * param_node = node->sons[2];
     ast_node * block_node = node->sons[3];
 
-    // 创建一个新的函数定义，函数的返回类型设置为VOID，待定，必须等return时才能确定，目前可以是VOID或者INT类型
-    // 请注意这个与C语言的函数定义不同。在实现MiniC编译器时必须调整
+    // 创建一个新的函数定义
     Function * newFunc = module->newFunction(name_node->name, type_node->type);
     if (!newFunc) {
         // 新定义的函数已经存在，则失败返回。
