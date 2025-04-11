@@ -403,7 +403,7 @@ tests 目录下存放了一些简单的测试用例。
 
 ```shell
 # 翻译 test1-1.c 成 ARM32 汇编
-./build/minic -S -o tests/test1-1-0.s tests/test1-1.c
+./build/minic -S -o tests/test1-1.s tests/test1-1.c
 # 把 test1-1.c 通过 arm 版的交叉编译器 gcc 翻译成汇编
 arm-linux-gnueabihf-gcc -S -o tests/test1-1-1.s tests/test1-1.c
 ```
@@ -419,7 +419,7 @@ arm-linux-gnueabihf-gcc -S -o tests/test1-1-1.s tests/test1-1.c
 
 ```shell
 # 通过 ARM gcc 编译器把汇编程序翻译成可执行程序，目标平台 ARM32
-arm-linux-gnueabihf-gcc -static -g -o tests/test1-1-0 tests/test1-1-0.s
+arm-linux-gnueabihf-gcc -static -g -o tests/test1-1 tests/test1-1.s
 # 通过 ARM gcc 编译器把汇编程序翻译成可执行程序，目标平台 ARM32
 arm-linux-gnueabihf-gcc -static -g -o tests/test1-1-1 tests/test1-1-1.s
 ```
@@ -436,7 +436,7 @@ arm-linux-gnueabihf-gcc -static -g -o tests/test1-1-1 tests/test1-1-1.s
 借助用户模式的 qemu 来运行，arm 架构可使用 qemu-arm-static 命令。
 
 ```shell
-qemu-arm-static tests/test1-1-0
+qemu-arm-static tests/test1-1
 echo $?
 qemu-arm-static tests/test1-1-1
 echo $?
@@ -447,7 +447,7 @@ echo $?
 如果测试用例源文件程序需要输入，假定输入的内容在文件A.in中，则可通过以下方式运行。
 
 ```shell
-qemu-arm-static tests/test1-1-0 < A.in
+qemu-arm-static tests/test1-1 < A.in
 echo $?
 qemu-arm-static tests/test1-1-1 < A.in
 echo $?
@@ -456,7 +456,7 @@ echo $?
 如果想把输出的内容写到文件中，可通过重定向符号>来实现，假定输入到B.out文件中。
 
 ```shell
-qemu-arm-static tests/test1-1-0 < A.in > A.out
+qemu-arm-static tests/test1-1 < A.in > A.out
 echo $?
 qemu-arm-static tests/test1-1-1 < A.in > A.out
 echo $?
@@ -479,11 +479,11 @@ sudo apt-get install -y gdb-multiarch
 
 ### 1.11.2. 启动具有 gdbserver 功能的 qemu
 
-假定通过交叉编译出的程序为 tests/test1，执行的命令如下：
+假定通过交叉编译出的程序为 tests/test1-1，执行的命令如下：
 
 ```shell
 # 启动 gdb server，监视的端口号为 1234
-qemu-arm-static -g 1234 tests/test1
+qemu-arm-static -g 1234 tests/test1-1
 ```
 
 其中-g 指定远程调试的端口，这里指定端口号为 1234，这样 qemu 会开启 gdb 的远程调试服务。
@@ -499,7 +499,7 @@ qemu-arm-static -g 1234 tests/test1
 注意这里的 gdb 要支持目标 CPU 的 gdb-multiarch，而不是本地的 gdb。
 
 ```shell
-gdb-multiarch tests/test1
+gdb-multiarch tests/test1-1
 # 输入如下的命令，远程连接 qemu 的 gdb server
 target remote localhost:1234
 # 在 main 函数入口设置断点

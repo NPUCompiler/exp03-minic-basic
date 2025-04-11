@@ -34,7 +34,7 @@
 			"type": "shell",
 			"label": "build and qemu run",
 			"command": "${workspaceFolder}/tools/arm32-build-gdb.sh",
-			"args": ["${workspaceFolder}", "test2-2"],
+			"args": ["${workspaceFolder}", "test1-1"],
 			"isBackground": true,
 			"problemMatcher": [
 				{
