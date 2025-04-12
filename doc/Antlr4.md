@@ -1,6 +1,6 @@
-# 在VSCode中使用Antlr4
+# 1. 在VSCode中使用Antlr4
 
-## 编写Antlr4的输入文件MiniC.g4
+## 1.1. 编写Antlr4的输入文件MiniC.g4
 
 ```antlr4
 grammar MiniC;
@@ -57,9 +57,9 @@ T_DIGIT: '0' | [1-9][0-9]*;
 WS: [ \r\n\t]+ -> skip;
 ```
 
-## 铁路图(Railroad Diagram)显示
+## 1.2. 铁路图(Railroad Diagram)显示
 
-### 概要
+### 1.2.1. 概要
 
 铁路图（Railroad Diagram)，又叫语法图(Syntax Diagram)，是一种表示形式语法的方式，是巴科斯范式和扩展巴科斯范式的图形化表示。
 
@@ -69,27 +69,27 @@ WS: [ \r\n\t]+ -> skip;
 - 任何沿着轨道能走通的序列都是合法的。任何不能沿着轨道走通的序列都是非法的。
 - 末端只有一个竖条的铁路图，表示允许在任意一对符号中插入空白，而在末端有两个竖条的铁路图则不允许。
 
-### 举例
+### 1.2.2. 举例
 
 右键单击MiniC.g4中的block: T_L_BRACE blockItemList? T_R_BRACE，选择Show Railroad Diagram for Rule可显示如下图。
 
 ![Antlr4-RailRoad-Block](figures/block.rrd.svg)
 
-## 扩充转移网格(ATN: Augmented Transition Network)显示
+## 1.3. 扩充转移网格(ATN: Augmented Transition Network)显示
 
-### 概要
+### 1.3.1. 概要
 
 扩充转移网络是自然语言自动处理的一种方法，简称ATN。许多自然语言信息处理的专用软件都是根据扩充转移网络可以解释语义、分析句子结构的原理设计的。
 
 ATN在1970年美国人工智能专家W.A.伍兹提出。它采用状态图来控制自然语言的分析过程。每幅状态图相当于一个网络，由状态和边构成，在状态图的各条边上，可以注明所分析的词，或词组类型符号。每一个词组类型符号又可以作为一个子网络的开头，因而当采用扩充转移网络来分析自然语言的句子时，如果分析到某一词组类型符号，就可以转移到相应的子网络，如果处理结束或处理失败，可再回到原来的网络继续进行分析，直到分析完整个句子为止。
 
-### 举例
+### 1.3.2. 举例
 
 右键单击MiniC.g4中的block: T_L_BRACE blockItemList? T_R_BRACE，选择*Show ATN Graph for Rule*可显示如下图。
 
 ![aAntlr4-ATN-Block](figures/block.atn.png)
 
-## 具体语法树(Concrete Syntax Tree)显示
+## 1.4. 具体语法树(Concrete Syntax Tree)显示
 
 在.vscode下的launch.json增加如下的配置：
 ```json

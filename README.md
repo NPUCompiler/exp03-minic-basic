@@ -535,3 +535,12 @@ cpack --config CPackSourceConfig.cmake
 如下图所示，描述的是Value、User、Use、Instruction等的类图。
 
 ![IR的类图](doc/figures/Value-User-Use.svg)
+
+有关类型的类图如下图所示。
+
+![Type的类图](./doc/figures/Type类.png)
+
+## 1.15 VSCode中使用Antlr4
+
+具体可阅读[Antlr4使用](doc/Antlr4.md)。
+
