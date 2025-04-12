@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.12)
 project(minic VERSION 1.0.0 LANGUAGES CXX)
 
 # 是否输出Bison语法分析时是否输出自动机， 默认不输出
-# 如果修改为OFF，请删除build后重新构建程序
+# 如果修改为ON，请删除build后重新构建程序
 set(BISON_OUTPUT_GRAPH OFF CACHE BOOL "Enable/Disable output of a graph of the automaton for Bison")
 
 # 是否使用GravphViz库
