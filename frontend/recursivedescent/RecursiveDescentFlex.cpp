@@ -65,10 +65,20 @@ int rd_flex()
     int tokenKind = -1; // Token的值
 
     // 忽略空白符号，主要有空格，TAB键和换行符
-    while ((c = fgetc(rd_filein)) == ' ' || c == '\t' || c == '\n') {
+    while ((c = fgetc(rd_filein)) == ' ' || c == '\t' || c == '\n' || c == '\r') {
 
-        // TODO 请支持Linux/Windows/Mac系统的行号分析
-        if (c == '\n') {
+        // 支持Linux/Windows/Mac系统的行号分析
+        // Windows：\r\n
+        // Mac: \n
+        // Unix(Linux): \r
+        if (c == '\r') {
+            c = fgetc(rd_filein);
+            rd_line_no++;
+            if (c != '\n') {
+                // 不是\n，则回退
+                ungetc(c, rd_filein);
+            }
+        } else if (c == '\n') {
             rd_line_no++;
         }
     }
