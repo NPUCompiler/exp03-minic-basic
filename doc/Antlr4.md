@@ -30,8 +30,6 @@ blockItemList: blockItem+;
 // 每个Item可以是一个语句 TODO 变量声明也是
 blockItem: statement;
 
-//TODO 变量声明
-
 // 目前语句支持return和赋值语句
 statement: T_RETURN expr T_SEMICOLON         # returnStatement;
 
@@ -64,6 +62,7 @@ WS: [ \r\n\t]+ -> skip;
 铁路图（Railroad Diagram)，又叫语法图(Syntax Diagram)，是一种表示形式语法的方式，是巴科斯范式和扩展巴科斯范式的图形化表示。
 
 铁路图的基本规则：
+
 - 从左边界开始，沿着轨道到右边界。
 - 沿途，你会在圆框中遇到的是非终结符，在方块中遇到的是终结符。
 - 任何沿着轨道能走通的序列都是合法的。任何不能沿着轨道走通的序列都是非法的。
@@ -81,7 +80,10 @@ WS: [ \r\n\t]+ -> skip;
 
 扩充转移网络是自然语言自动处理的一种方法，简称ATN。许多自然语言信息处理的专用软件都是根据扩充转移网络可以解释语义、分析句子结构的原理设计的。
 
-ATN在1970年美国人工智能专家W.A.伍兹提出。它采用状态图来控制自然语言的分析过程。每幅状态图相当于一个网络，由状态和边构成，在状态图的各条边上，可以注明所分析的词，或词组类型符号。每一个词组类型符号又可以作为一个子网络的开头，因而当采用扩充转移网络来分析自然语言的句子时，如果分析到某一词组类型符号，就可以转移到相应的子网络，如果处理结束或处理失败，可再回到原来的网络继续进行分析，直到分析完整个句子为止。
+ATN在1970年美国人工智能专家W.A.伍兹提出。它采用状态图来控制自然语言的分析过程。
+每幅状态图相当于一个网络，由状态和边构成，在状态图的各条边上，可以注明所分析的词，或词组类型符号。
+每一个词组类型符号又可以作为一个子网络的开头，因而当采用扩充转移网络来分析自然语言的句子时，
+如果分析到某一词组类型符号，就可以转移到相应的子网络，如果处理结束或处理失败，可再回到原来的网络继续进行分析，直到分析完整个句子为止。
 
 ### 1.3.2. 举例
 
@@ -92,24 +94,36 @@ ATN在1970年美国人工智能专家W.A.伍兹提出。它采用状态图来控
 ## 1.4. 具体语法树(Concrete Syntax Tree)显示
 
 在.vscode下的launch.json增加如下的配置：
+
 ```json
 {
-	"type": "antlr-debug",
-	"request": "launch",
-	// 调试的名称，可修改
-	"name": "Debug minic Antlr4 Grammar",
-	// 文法解析的输入文件
-	"input": "tests/test1-1.c",
-	// 分析树可视化，也就是具体语法树AST
-	"visualParseTree": true,
-	// 文本输出分析树
-	"printParseTree": true,
-	// 语法的开始符号
-	"startRule": "compileUnit",
-	// 描述语法的g4文件
-	"grammar": "${workspaceFolder}/frontend/antlr4/MiniC.g4"
+    "type": "antlr-debug",
+    "request": "launch",
+    // 调试的名称，可修改
+    "name": "Debug minic Antlr4 Grammar",
+    // 文法解析的输入文件
+    "input": "tests/test1-1.c",
+    // 分析树可视化，也就是具体语法树AST
+    "visualParseTree": true,
+    // 文本输出分析树
+    "printParseTree": true,
+    // 语法的开始符号
+    "startRule": "compileUnit",
+    // 描述语法的g4文件
+    "grammar": "${workspaceFolder}/frontend/antlr4/MiniC.g4"
 },
 ```
-然后在Run and Debug中选择Debug Calculator Antlr4 Grammar进行调试即可输出具体语法树。如下图所示。
-![Antlr4-CST](figures/minic-CST.png)
 
+然后在Run and Debug中选择Debug Calculator Antlr4 Grammar进行调试运行后可输出tests/test1-1.c进行语法识别后的具体语法树。
+
+tests/test1-1.c的内容如下所示：
+
+```c
+int main()
+{
+    return 10;
+}
+```
+
+具体语法树如下图所示。
+![Antlr4-CST](figures/minic-CST.png)
