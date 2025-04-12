@@ -1,0 +1,76 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "cppgdb",
+      "name": "minic",
+      "project": "CMakeLists.txt",
+      "projectTarget": "minic",
+      "comment": "了解如何配置 WSL 调试。有关详细信息，请参阅 http://aka.ms/vslinuxdebug",
+      "debuggerConfiguration": "gdb",
+      "args": [
+        "-S",
+        "-I",
+        "-o",
+        "tests/test1-1.ir",
+        "tests/test1-1.c"
+      ],
+      "cwd": "${debugInfo.remoteWorkspaceRoot}",
+      "env": {}
+    },
+    {
+      "type": "cppgdb",
+      "name": "minic IR 递归下降分析法",
+      "project": "CMakeLists.txt",
+      "projectTarget": "minic",
+      "comment": "了解如何配置 WSL 调试。有关详细信息，请参阅 http://aka.ms/vslinuxdebug",
+      "debuggerConfiguration": "gdb",
+      "args": [
+        "-S",
+        "-I",
+        "-D",
+        "-o",
+        "tests/test1-1.ir",
+        "tests/test1-1.c"
+      ],
+      "cwd": "${debugInfo.remoteWorkspaceRoot}",
+      "env": {}
+    },
+    {
+      "type": "cppgdb",
+      "name": "minic IR Antlr4",
+      "project": "CMakeLists.txt",
+      "projectTarget": "minic",
+      "comment": "了解如何配置 WSL 调试。有关详细信息，请参阅 http://aka.ms/vslinuxdebug",
+      "debuggerConfiguration": "gdb",
+      "args": [
+        "-S",
+        "-I",
+        "-A",
+        "-o",
+        "tests/test1-1.ir",
+        "tests/test1-1.c"
+      ],
+      "cwd": "${debugInfo.remoteWorkspaceRoot}",
+      "env": {}
+    },
+    {
+      "type": "cppgdb",
+      "name": "minic IR flex&bison",
+      "project": "CMakeLists.txt",
+      "projectTarget": "minic",
+      "comment": "了解如何配置 WSL 调试。有关详细信息，请参阅 http://aka.ms/vslinuxdebug",
+      "debuggerConfiguration": "gdb",
+      "args": [
+        "-S",
+        "-I",
+        "-o",
+        "tests/test1-1.ir",
+        "tests/test1-1.c"
+      ],
+      "cwd": "${debugInfo.remoteWorkspaceRoot}",
+      "env": {}
+    }
+  ]
+}
