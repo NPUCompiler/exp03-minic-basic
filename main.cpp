@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <string>
+#include <getopt.h>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -27,7 +28,6 @@
 #include "IRGenerator.h"
 #include "RecursiveDescentExecutor.h"
 #include "Module.h"
-#include "getopt-port.h"
 
 ///
 /// @brief 是否显示帮助信息
@@ -86,11 +86,36 @@ static std::string gInputFile;
 /// @brief 输出文件，不同的选项输出的内容不同
 static std::string gOutputFile;
 
+static struct option long_options[] = {
+    {"help", no_argument, 0, 'h'},
+    {"output", required_argument, 0, 'o'},
+    {"symbol", no_argument, 0, 'S'},
+    {"ast", no_argument, 0, 'T'},
+    {"ir", no_argument, 0, 'I'},
+    {"antlr4", no_argument, 0, 'A'},
+    {"recursive-descent", no_argument, 0, 'D'},
+    {"optimize", required_argument, 0, 'O'},
+    {"target", required_argument, 0, 't'},
+    {"asmir", no_argument, 0, 'c'},
+    {0, 0, 0, 0}
+};
+
 /// @brief 显示帮助
 /// @param exeName
 static void showHelp(const std::string & exeName)
 {
-    std::cout << exeName + " -S [-A | -D] [-T | -I] [-o output] source\n";
+    std::cout << exeName + " -S [--symbol] [-A | --antlr4 | -D | --recursive-descent] [-T | --ast | -I | --ir] [-o output | --output=output] source\n";
+    std::cout << "Options:\n";
+    std::cout << "  -h, --help                 Show this help message\n";
+    std::cout << "  -o, --output=FILE          Specify output file\n";
+    std::cout << "  -S, --symbol               Show symbol information\n";
+    std::cout << "  -T, --ast                  Output abstract syntax tree\n";
+    std::cout << "  -I, --ir                   Output intermediate representation\n";
+    std::cout << "  -A, --antlr4               Use Antlr4 for lexical and syntax analysis\n";
+    std::cout << "  -D, --recursive-descent    Use recursive descent parsing\n";
+    std::cout << "  -O, --optimize=LEVEL       Set optimization level\n";
+    std::cout << "  -t, --target=CPU           Specify target CPU architecture\n";
+    std::cout << "  -c, --asmir                Show IR instructions as comments in assembly output\n";
 }
 
 /// @brief 参数解析与有效性检查
@@ -110,11 +135,12 @@ static int ArgsAnalysis(int argc, char * argv[])
     // -t要求必须带有目标CPU，指明目标CPU的汇编
     // -c选项在输出汇编时有效，附带输出IR指令内容
     const char options[] = "ho:STIADO:t:c";
+    int option_index = 0;
 
     opterr = 1;
 
 lb_check:
-    while ((ch = getopt(argc, argv, options)) != -1) {
+    while ((ch = getopt_long(argc, argv, options, long_options, &option_index)) != -1) {
         switch (ch) {
             case 'h':
                 gShowHelp = true;

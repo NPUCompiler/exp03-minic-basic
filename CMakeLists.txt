@@ -214,8 +214,6 @@ set(SYMBOLTABLES_SRCS
 set(UTILS_SRCS
 	utils/Common.cpp
 	utils/Common.h
-	utils/getopt-port.cpp
-	utils/getopt-port.h
 	utils/Set.h
 	utils/Set.cpp
 	utils/BitMap.h
