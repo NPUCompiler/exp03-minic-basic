@@ -1,5 +1,5 @@
 {
-	"version": 9,
+	"version": 3,
 	"configurePresets": [
 		{
 			"name": "linux-config-base",
@@ -9,6 +9,28 @@
 				"type": "equals",
 				"lhs": "Linux",
 				"rhs": "${hostSystemName}"
+			},
+			"cacheVariables": {
+				"CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+			},
+			"vendor": {
+				"microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+					"sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+				}
+			}
+		},
+		{
+			"name": "macosx-config-base",
+			"hidden": true,
+			"generator": "Ninja",
+			"toolchainFile": "CMake/macosx_clang_toolchain.cmake",
+			"condition": {
+				"type": "equals",
+				"lhs": "Darwin",
+				"rhs": "${hostSystemName}"
+			},
+			"cacheVariables": {
+				"CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
 			},
 			"vendor": {
 				"microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
@@ -59,6 +81,22 @@
 				"CMAKE_BUILD_TYPE": "Release"
 			},
 			"inherits": "linux-config-gcc"
+		},
+		{
+			"name": "cmake-build-debug-macosx",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			},
+			"inherits": "macosx-config-base"
+		},
+		{
+			"name": "cmake-build-release-macosx",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release"
+			},
+			"inherits": "macosx-config-base"
 		}
 	],
 	"buildPresets": [
@@ -68,6 +106,16 @@
 			"condition": {
 				"type": "equals",
 				"lhs": "Linux",
+				"rhs": "${hostSystemName}"
+			},
+			"jobs": 8
+		},
+		{
+			"name": "macosx-build-base",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "Darwin",
 				"rhs": "${hostSystemName}"
 			},
 			"jobs": 8
@@ -91,16 +139,16 @@
 			"name": "linux-x64-release-gcc",
 			"configurePreset": "cmake-build-release-gcc",
 			"inherits": "linux-build-base"
-		}
-	],
-	"packagePresets": [
-		{
-			"name": "linux-package-debug-clang",
-			"configurePreset": "cmake-build-debug-clang"
 		},
 		{
-			"name": "linux-package-release-clang",
-			"configurePreset": "cmake-build-release-clang"
+			"name": "macosx-x64-debug-clang",
+			"configurePreset": "cmake-build-debug-macosx",
+			"inherits": "macosx-build-base"
+		},
+		{
+			"name": "macosx-x64-release-clang",
+			"configurePreset": "cmake-build-release-macosx",
+			"inherits": "macosx-build-base"
 		}
 	]
 }

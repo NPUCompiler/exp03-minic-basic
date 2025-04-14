@@ -31,7 +31,6 @@
 	"vsicons.dontShowNewVersionMessage": true,
 	"todo-tree.general.tags": ["BUG", "HACK", "FIXME", "TODO", "XXX", "[ ]", "[x]"],
 	"todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^\\s*(-|\\d+.))\\s*($TAGS)",
-	"cmake.buildDirectory": "${workspaceFolder}/build",
 	"cmake.configureOnOpen": false,
 	"cmake.generator": "Ninja",
 	"cmake.options.statusBarVisibility": "visible",
@@ -48,9 +47,6 @@
 	},
 	"?cmake.languageSupport.dotnetPath": "请根据操作系统的种类进行修改,Linux：/usr/bin/dotnet,Mac：/usr/local/opt/dotnet@6/bin/dotnet,Windows：C:/Program Files/dotnet/dotnet.exe",
 	"cmake.languageSupport.dotnetPath": "/usr/bin/dotnet",
-	"cmake.buildEnvironment": {
-		"CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-	},
 	"debug.allowBreakpointsEverywhere": true,
 	"explorer.confirmDelete": false,
 	"terminal.integrated.defaultProfile.windows": "Command Prompt",

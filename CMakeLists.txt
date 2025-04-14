@@ -10,9 +10,9 @@ set(BISON_OUTPUT_GRAPH OFF CACHE BOOL "Enable/Disable output of a graph of the a
 # 是否使用GravphViz库
 set(USE_GRAPHVIZ ON CACHE BOOL "Enable/Disable GraphViz")
 
-# 默认设置为ON，这里可注释掉。开启时会产生compile_commands.json的文件，有了这个文件才能识别出clang-tidy的配置
+# 开启时会产生compile_commands.json的文件，有了这个文件才能识别出clang-tidy的配置
 # Generates a `compile_commands.json` that can be used for autocompletion
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Enable/Disable output of compile commands during generation.")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # 这个目前没有用处，可删除
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -362,6 +362,18 @@ add_custom_target(ANTLR4_GEN
 )
 
 add_dependencies(${PROJECT_NAME} ANTLR4_GEN)
+
+add_custom_command(TARGET ${PROJECT_NAME}
+	POST_BUILD
+	COMMAND_EXPAND_LISTS
+	COMMAND
+	${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json ${CMAKE_CURRENT_SOURCE_DIR}/build/
+	COMMAND
+	${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_CURRENT_SOURCE_DIR}/build/
+	COMMENT
+	"compile_commands.json copy to build"
+	VERBATIM
+)
 
 # 源代码打包
 set(CPACK_SOURCE_GENERATOR "TGZ")
