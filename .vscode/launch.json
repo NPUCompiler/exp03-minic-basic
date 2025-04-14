@@ -18,7 +18,7 @@
 			// 语法的开始符号
 			"startRule": "compileUnit",
 			// 描述语法的g4文件
-			"grammar": "${workspaceFolder}/frontend/antlr4/MiniC.g4"
+			"grammar": "frontend/antlr4/MiniC.g4"
 		},
 		{
 			// 可采用GCC或者Clang编译器

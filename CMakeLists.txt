@@ -313,6 +313,9 @@ add_custom_target(FLEX_GEN
 	${FLEX_INPUT}
 	WORKING_DIRECTORY
 	${FLEX_GEN_DIR}
+	COMMENT
+	"flex generate"
+	VERBATIM
 )
 
 # 通过bison生成语法分析源代码
@@ -323,13 +326,16 @@ add_custom_target(BISON_GEN
 	${BISON_INPUT}
 	WORKING_DIRECTORY
 	${BISON_GEN_DIR}
+	COMMENT
+	"bison generate"
+	VERBATIM
 )
 
 add_dependencies(${PROJECT_NAME} BISON_GEN FLEX_GEN)
 
 if(BISON_OUTPUT_GRAPH)
 	# 转换dot文件成png文件
-	add_custom_target(BISON_DOT
+	add_custom_target(BISON_DOT2PNG
 		COMMAND
 		dot -Tpng -o ${BISON_GEN_DIR}/MiniCBison.png ${BISON_GEN_DIR}/MiniCBison.dot
 		DEPENDS ${BISON_GEN_DIR}/MiniCBison.dot
@@ -337,22 +343,25 @@ if(BISON_OUTPUT_GRAPH)
 		"dot2png"
 		VERBATIM
 	)
-	add_dependencies(BISON_DOT BISON_GEN)
-	add_dependencies(${PROJECT_NAME} BISON_DOT)
+	add_dependencies(BISON_DOT2PNG BISON_GEN)
+	add_dependencies(${PROJECT_NAME} BISON_DOT2PNG)
 endif()
 
 # 通过antlr4.12.0生成词法与语法分析源代码
 # WORKING_DIRECTORY指定工作目录时Mac平台有问题，因此使用绝对地址
-add_custom_command(
-	OUTPUT
-	${ANTLR4_OUTPUT}
+add_custom_target(ANTLR4_GEN
 	COMMAND
 	${Java_JAVA_EXECUTABLE} -jar ${ANTLR4_JAR_LOCATION} -Dlanguage=Cpp -no-listener -visitor -o ${ANTLR4_GEN_DIR} MiniC.g4
 	DEPENDS
 	${ANTLR4_INPUT}
 	WORKING_DIRECTORY
 	${ANTLR4_GEN_DIR}/..
+	COMMENT
+	"antlr4 generate"
+	VERBATIM
 )
+
+add_dependencies(${PROJECT_NAME} ANTLR4_GEN)
 
 # 源代码打包
 set(CPACK_SOURCE_GENERATOR "TGZ")
@@ -365,7 +374,6 @@ set(CPACK_SOURCE_IGNORE_FILES
 	"/.git/;" # 忽略 Git 仓库
 	"~$;" # 忽略临时文件（如编辑器产生的临时文件）
 	"/doc/;" # 忽略 doc 目录
-	"/frontend/antlr4/.antlr/;" # antlr自动产生的目录
 	"/.history/;" # 本地历史文件
 	"/tests/;" # 测试文件夹
 )

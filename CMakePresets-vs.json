@@ -1,25 +1,106 @@
 {
-	"version": 3,
+	"version": 9,
 	"configurePresets": [
 		{
-			"name": "linux-debug",
-			"displayName": "Linux Debug",
+			"name": "linux-config-base",
+			"hidden": true,
 			"generator": "Ninja",
-			"binaryDir": "${sourceDir}/out/build/${presetName}",
-			"installDir": "${sourceDir}/out/install/${presetName}",
-			"cacheVariables": {
-				"CMAKE_BUILD_TYPE": "Debug"
-			},
 			"condition": {
 				"type": "equals",
-				"lhs": "${hostSystemName}",
-				"rhs": "Linux"
+				"lhs": "Linux",
+				"rhs": "${hostSystemName}"
 			},
 			"vendor": {
 				"microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
 					"sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
 				}
 			}
+		},
+		{
+			"name": "linux-config-clang",
+			"hidden": true,
+			"toolchainFile": "CMake/linux_clang_toolchain.cmake",
+			"inherits": "linux-config-base"
+		},
+		{
+			"name": "linux-config-gcc",
+			"hidden": true,
+			"toolchainFile": "CMake/linux_gcc_toolchain.cmake",
+			"inherits": "linux-config-base"
+		},
+		{
+			"name": "cmake-build-debug-clang",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			},
+			"inherits": "linux-config-clang"
+		},
+		{
+			"name": "cmake-build-release-clang",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release"
+			},
+			"inherits": "linux-config-clang"
+		},
+		{
+			"name": "cmake-build-debug-gcc",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			},
+			"inherits": "linux-config-gcc"
+		},
+		{
+			"name": "cmake-build-release-gcc",
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release"
+			},
+			"inherits": "linux-config-gcc"
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "linux-build-base",
+			"hidden": true,
+			"condition": {
+				"type": "equals",
+				"lhs": "Linux",
+				"rhs": "${hostSystemName}"
+			},
+			"jobs": 8
+		},
+		{
+			"name": "linux-x64-debug-clang",
+			"configurePreset": "cmake-build-debug-clang",
+			"inherits": "linux-build-base"
+		},
+		{
+			"name": "linux-x64-release-clang",
+			"configurePreset": "cmake-build-release-clang",
+			"inherits": "linux-build-base"
+		},
+		{
+			"name": "linux-x64-debug-gcc",
+			"configurePreset": "cmake-build-debug-gcc",
+			"inherits": "linux-build-base"
+		},
+		{
+			"name": "linux-x64-release-gcc",
+			"configurePreset": "cmake-build-release-gcc",
+			"inherits": "linux-build-base"
+		}
+	],
+	"packagePresets": [
+		{
+			"name": "linux-package-debug-clang",
+			"configurePreset": "cmake-build-debug-clang"
+		},
+		{
+			"name": "linux-package-release-clang",
+			"configurePreset": "cmake-build-release-clang"
 		}
 	]
 }
