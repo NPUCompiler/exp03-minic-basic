@@ -26,9 +26,9 @@ class FrontEndExecutor {
 public:
     ///
     /// @brief 构造函数
-    /// @param[in] 源文件路径
+    /// @param[in] _filename 源文件路径
     ///
-    FrontEndExecutor(std::string _filename) : filename(_filename)
+    explicit FrontEndExecutor(std::string _filename) : filename(_filename)
     {}
 
     ///
@@ -45,7 +45,7 @@ public:
     /// @brief  返回抽象语法树的根
     /// @return ast_node*
     ///
-    ast_node * getASTRoot()
+    [[nodiscard]] ast_node * getASTRoot() const
     {
         return astRoot;
     }
@@ -59,5 +59,5 @@ protected:
     ///
     /// @brief  抽象语法树的根
     ///
-    ast_node * astRoot;
+    ast_node * astRoot = nullptr;
 };
