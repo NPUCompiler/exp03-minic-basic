@@ -1,4 +1,4 @@
-﻿///
+///
 /// @file IRGenerator.cpp
 /// @brief AST遍历产生线性IR的源文件
 /// @author zenglj (zenglj@live.com)
@@ -17,8 +17,10 @@
 #include <cstdio>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
 #include "AST.h"
+#include "Common.h"
 #include "Function.h"
 #include "IRCode.h"
 #include "IRGenerator.h"
@@ -298,11 +300,20 @@ bool IRGenerator::ir_return(ast_node * node)
     // 这里只处理整型的数据，如需支持实数，则需要针对类型进行处理
     Function * currentFunc = module->getCurrentFunction();
 
-    // 创建临时变量保存IR的值，以及线性IR指令
-    node->blockInsts.addInst(right->blockInsts);
+    // 返回值存在时则移动指令到node中
+    if (right) {
 
-    // 返回值赋值到函数返回值变量上，然后跳转到函数的尾部
-    node->blockInsts.addInst(new MoveInstruction(currentFunc, currentFunc->getReturnValue(), right->val));
+        // 创建临时变量保存IR的值，以及线性IR指令
+        node->blockInsts.addInst(right->blockInsts);
+
+        // 返回值赋值到函数返回值变量上，然后跳转到函数的尾部
+        node->blockInsts.addInst(new MoveInstruction(currentFunc, currentFunc->getReturnValue(), right->val));
+
+        node->val = right->val;
+    } else {
+        // 没有返回值
+        node->val = nullptr;
+    }
 
     // 跳转到函数的尾部出口指令上
     node->blockInsts.addInst(new GotoInstruction(currentFunc, currentFunc->getExitLabel()));
