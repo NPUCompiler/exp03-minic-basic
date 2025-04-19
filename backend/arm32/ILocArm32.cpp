@@ -132,7 +132,7 @@ ILocArm32::~ILocArm32()
 }
 
 /// @brief 删除无用的Label指令
-void ILocArm32::deleteUsedLabel()
+void ILocArm32::deleteUnusedLabel()
 {
     std::list<ArmInst *> labelInsts;
     for (ArmInst * arm: code) {
@@ -141,6 +141,8 @@ void ILocArm32::deleteUsedLabel()
         }
     }
 
+    // 检测Label指令是否在被使用，也就是是否有跳转到该Label的指令
+    // 如果没有使用，则设置为dead
     for (ArmInst * labelArm: labelInsts) {
         bool labelUsed = false;
 
@@ -506,20 +508,16 @@ void ILocArm32::leaStack(int rs_reg_no, int base_reg_no, int off)
 /// @param tmp_reg_No
 void ILocArm32::allocStack(Function * func, int tmp_reg_no)
 {
-    // 超过四个的函数调用参数个数，多余4个，则需要栈传值
-    int funcCallArgCnt = func->getMaxFuncCallArgCnt() - 4;
-    if (funcCallArgCnt < 0) {
-        funcCallArgCnt = 0;
-    }
-
     // 计算栈帧大小
     int off = func->getMaxDep();
 
-    off += funcCallArgCnt * 4;
-
     // 不需要在栈内额外分配空间，则什么都不做
-    if (0 == off)
+    if (0 == off) {
         return;
+    }
+
+    // 保存SP寄存器到FP寄存器中
+    mov_reg(ARM32_FP_REG_NO, ARM32_SP_REG_NO);
 
     if (PlatformArm32::constExpr(off)) {
         // sub sp,sp,#16
@@ -531,9 +529,6 @@ void ILocArm32::allocStack(Function * func, int tmp_reg_no)
         // sub sp,sp,r8
         emit("sub", "sp", "sp", PlatformArm32::regName[tmp_reg_no]);
     }
-
-    // 函数调用通过栈传递的基址寄存器设置
-    inst("add", PlatformArm32::regName[ARM32_FP_REG_NO], "sp", toStr(funcCallArgCnt * 4));
 }
 
 /// @brief 调用函数fun

@@ -18,7 +18,6 @@
 #include <list>
 #include <string>
 
-#include "Instruction.h"
 #include "Module.h"
 
 #define Instanceof(res, type, var) auto res = dynamic_cast<type>(var)
@@ -214,5 +213,5 @@ public:
     void outPut(FILE * file, bool outputEmpty = false);
 
     /// @brief 删除无用的Label指令
-    void deleteUsedLabel();
+    void deleteUnusedLabel();
 };

@@ -31,6 +31,11 @@
 ///
 class User : public Value {
 
+    ///
+    /// @brief 操作数列表，指向当前Value的所有操作数
+    ///
+    std::vector<Use *> operands;
+
 public:
     ///
     /// @brief 构造函数

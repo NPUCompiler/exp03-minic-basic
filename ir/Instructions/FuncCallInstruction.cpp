@@ -60,7 +60,7 @@ void FuncCallInstruction::toString(std::string & str)
     } else {
 
         // 函数有返回值要设置到结果变量中
-        str = type->toString() + " " + getIRName() + " = call i32 " + calledFunction->getIRName() + "(";
+        str = getIRName() + " = call i32 " + calledFunction->getIRName() + "(";
     }
 
     if (argCount == 0) {
