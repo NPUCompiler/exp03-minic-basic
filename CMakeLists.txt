@@ -47,7 +47,8 @@ find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
 # 设置antlr-4.12.0-complete的位置
-set(ANTLR4_JAR_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/antlr4/antlr-4.12.0-complete.jar)
+set(ANTLR4_VERSION 4.12.0 CACHE STRING "ANTLR4 version")
+set(ANTLR4_JAR_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/antlr4/antlr-${ANTLR4_VERSION}-complete.jar)
 
 # 查找antlr4-runtime包是否存在，若不存在则出错。目的用于本程序与Antlr4进行链接
 find_package(ANTLR4 REQUIRED)
@@ -305,21 +306,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${ANTLR4_LIBRARY})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
-# 通过flex产生词法分析源代码
-add_custom_target(FLEX_GEN
-	COMMAND
-	${FLEX_EXECUTABLE} ${FLEX_OPTION} -o ${FLEX_GEN_DIR}/MiniCFlex.cpp --header-file=${FLEX_GEN_DIR}/MiniCFlex.h ${FLEX_INPUT}
-	DEPENDS
-	${FLEX_INPUT}
-	WORKING_DIRECTORY
-	${FLEX_GEN_DIR}
-	COMMENT
-	"flex generate"
-	VERBATIM
-)
-
 # 通过bison生成语法分析源代码
-add_custom_target(BISON_GEN
+add_custom_command(OUTPUT ${BISON_OUTPUT}
+	COMMAND
+	${CMAKE_COMMAND} -E make_directory ${BISON_GEN_DIR}
 	COMMAND
 	${BISON_EXECUTABLE} -d --debug ${BISON_EXTRA_OPTION} -o ${BISON_GEN_DIR}/MiniCBison.cpp --defines=${BISON_GEN_DIR}/MiniCBison.h ${BISON_INPUT}
 	DEPENDS
@@ -329,9 +319,24 @@ add_custom_target(BISON_GEN
 	COMMENT
 	"bison generate"
 	VERBATIM
+	COMMAND_EXPAND_LISTS
 )
 
-add_dependencies(${PROJECT_NAME} BISON_GEN FLEX_GEN)
+# 通过flex产生词法分析源代码
+add_custom_command(OUTPUT ${FLEX_OUTPUT}
+	COMMAND
+	${CMAKE_COMMAND} -E make_directory ${FLEX_GEN_DIR}
+	COMMAND
+	${FLEX_EXECUTABLE} ${FLEX_OPTION} -o ${FLEX_GEN_DIR}/MiniCFlex.cpp --header-file=${FLEX_GEN_DIR}/MiniCFlex.h ${FLEX_INPUT}
+	DEPENDS
+	${FLEX_INPUT}
+	WORKING_DIRECTORY
+	${FLEX_GEN_DIR}
+	COMMENT
+	"flex generate"
+	VERBATIM
+	COMMAND_EXPAND_LISTS
+)
 
 if(BISON_OUTPUT_GRAPH)
 	# 转换dot文件成png文件
@@ -343,13 +348,13 @@ if(BISON_OUTPUT_GRAPH)
 		"dot2png"
 		VERBATIM
 	)
-	add_dependencies(BISON_DOT2PNG BISON_GEN)
 	add_dependencies(${PROJECT_NAME} BISON_DOT2PNG)
 endif()
 
 # 通过antlr4.12.0生成词法与语法分析源代码
 # WORKING_DIRECTORY指定工作目录时Mac平台有问题，因此使用绝对地址
-add_custom_target(ANTLR4_GEN
+add_custom_command(OUTPUT ${ANTLR4_OUTPUT}
+	COMMAND_EXPAND_LISTS
 	COMMAND
 	${Java_JAVA_EXECUTABLE} -jar ${ANTLR4_JAR_LOCATION} -Dlanguage=Cpp -no-listener -visitor -o ${ANTLR4_GEN_DIR} MiniC.g4
 	DEPENDS
@@ -359,13 +364,11 @@ add_custom_target(ANTLR4_GEN
 	COMMENT
 	"antlr4 generate"
 	VERBATIM
+	COMMAND_EXPAND_LISTS
 )
-
-add_dependencies(${PROJECT_NAME} ANTLR4_GEN)
 
 add_custom_command(TARGET ${PROJECT_NAME}
 	POST_BUILD
-	COMMAND_EXPAND_LISTS
 	COMMAND
 	${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json ${CMAKE_CURRENT_SOURCE_DIR}/build/
 	COMMAND
@@ -373,6 +376,7 @@ add_custom_command(TARGET ${PROJECT_NAME}
 	COMMENT
 	"compile_commands.json copy to build"
 	VERBATIM
+	COMMAND_EXPAND_LISTS
 )
 
 # 源代码打包
@@ -386,6 +390,7 @@ set(CPACK_SOURCE_IGNORE_FILES
 	"/.git/;" # 忽略 Git 仓库
 	"~$;" # 忽略临时文件（如编辑器产生的临时文件）
 	"/doc/;" # 忽略 doc 目录
+	"/frontend/antlr4/.antlr/;" # antlr自动产生的目录
 	"/.history/;" # 本地历史文件
 	"/tests/;" # 测试文件夹
 )
