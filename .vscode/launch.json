@@ -18,11 +18,11 @@
 			// 语法的开始符号
 			"startRule": "compileUnit",
 			// 描述语法的g4文件
-			"grammar": "frontend/antlr4/MiniC.g4"
+			"grammar": "${workspaceFolder}/frontend/antlr4/MiniC.g4"
 		},
 		{
 			// 可采用GCC或者Clang编译器
-			"name": "Debug IR vscode-lldb",
+			"name": "minic Debug IR vscode-lldb",
 			"type": "lldb",
 			"request": "launch",
 			"program": "${workspaceFolder}/build/minic",
@@ -33,7 +33,7 @@
 		},
 		{
 			// 可采用GCC或者Clang编译器
-			"name": "Debug IR",
+			"name": "minic Debug IR",
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/build/minic",
@@ -72,7 +72,7 @@
 		},
 		{
 			// 可采用GCC或者Clang编译器
-			"name": "Debug AST",
+			"name": "minic Debug AST",
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/build/minic",
@@ -111,7 +111,7 @@
 		},
 		{
 			// 可采用GCC或者Clang编译器
-			"name": "Debug Backend ARM32",
+			"name": "minic Debug Backend ARM32",
 			"type": "lldb",
 			"request": "launch",
 			"program": "${workspaceFolder}/build/minic",
@@ -121,7 +121,7 @@
 			"preLaunchTask": "CMake: build"
 		},
 		{
-			"name": "Qemu Debug ARM32",
+			"name": "Qemu Debug minic arm32",
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/tests/test1-1",
@@ -145,7 +145,142 @@
 				"engineLogging": true,
 				"programOutput": true
 			},
-			"preLaunchTask": "build and qemu run"
+			"preLaunchTask": "minic and qemu run arm32"
+		},
+		{
+			"name": "Qemu Debug minic arm64",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/tests/test1-1",
+			"args": [],
+			// 程序的入口（main函数的入口）是否停止
+			"stopAtEntry": true,
+			"cwd": "${workspaceFolder}",
+			"miDebuggerServerAddress": "localhost:1234",
+			"miDebuggerPath": "/usr/bin/gdb-multiarch",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"setupCommands": [
+				{
+					"description": "pretty printing",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				}
+			],
+			"logging": {
+				"engineLogging": true,
+				"programOutput": true
+			},
+			"preLaunchTask": "minic and qemu run arm64"
+		},
+		{
+			"name": "Qemu Debug minic riscv64",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/tests/test1-1",
+			"args": [],
+			// 程序的入口（main函数的入口）是否停止
+			"stopAtEntry": true,
+			"cwd": "${workspaceFolder}",
+			"miDebuggerServerAddress": "localhost:1234",
+			"miDebuggerPath": "/usr/bin/gdb-multiarch",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"setupCommands": [
+				{
+					"description": "pretty printing",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				}
+			],
+			"logging": {
+				"engineLogging": true,
+				"programOutput": true
+			},
+			"preLaunchTask": "minic and qemu run riscv64"
+		},
+		{
+			"name": "Qemu Debug Direct arm32",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/tests/test1-1",
+			"args": [],
+			// 程序的入口（main函数的入口）是否停止
+			"stopAtEntry": true,
+			"cwd": "${workspaceFolder}",
+			"miDebuggerServerAddress": "localhost:1234",
+			"miDebuggerPath": "/usr/bin/gdb-multiarch",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"setupCommands": [
+				{
+					"description": "pretty printing",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				}
+			],
+			"logging": {
+				"engineLogging": true,
+				"programOutput": true
+			},
+			"preLaunchTask": "direct and qemu run arm32"
+		},
+		{
+			"name": "Qemu Debug Direct arm64",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/tests/test1-1",
+			"args": [],
+			// 程序的入口（main函数的入口）是否停止
+			"stopAtEntry": true,
+			"cwd": "${workspaceFolder}",
+			"miDebuggerServerAddress": "localhost:1234",
+			"miDebuggerPath": "/usr/bin/gdb-multiarch",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"setupCommands": [
+				{
+					"description": "pretty printing",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				}
+			],
+			"logging": {
+				"engineLogging": true,
+				"programOutput": true
+			},
+			"preLaunchTask": "direct and qemu run arm64"
+		},
+		{
+			"name": "Qemu Debug Direct riscv64",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/tests/test1-1",
+			"args": [],
+			// 程序的入口（main函数的入口）是否停止
+			"stopAtEntry": true,
+			"cwd": "${workspaceFolder}",
+			"miDebuggerServerAddress": "localhost:1234",
+			"miDebuggerPath": "/usr/bin/gdb-multiarch",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "gdb",
+			"setupCommands": [
+				{
+					"description": "pretty printing",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				}
+			],
+			"logging": {
+				"engineLogging": true,
+				"programOutput": true
+			},
+			"preLaunchTask": "direct and qemu run riscv64"
 		}
 	]
 }

@@ -31,7 +31,7 @@ printf "\n%d\n" $?
 echo "IRCompiler run"
 
 # 生成DragonIR
-if ! "${rundir}/cmake-build-debug/minic" -S -I -o "${rundir}/tests/${casename}.ir" "${rundir}/tests/${casename}.c"
+if ! "${rundir}/build/minic" -S -I -o "${rundir}/tests/${casename}.ir" "${rundir}/tests/${casename}.c"
 then
 	exit 1
 fi
@@ -44,7 +44,7 @@ echo "qemu arm32"
 
 # 生成ARM32汇编语言
 
-if ! "${rundir}/cmake-build-debug/minic" -S -c -o "${rundir}/tests/${casename}.s" "${rundir}/tests/${casename}.c"
+if ! "${rundir}/build/minic" -S -c -o "${rundir}/tests/${casename}.s" "${rundir}/tests/${casename}.c"
 then
 	exit 1
 fi

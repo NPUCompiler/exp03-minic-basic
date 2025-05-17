@@ -32,7 +32,7 @@
 		},
 		{
 			"type": "shell",
-			"label": "build and qemu run",
+			"label": "minic and qemu run arm32",
 			"command": "${workspaceFolder}/tools/arm32-build-gdb.sh",
 			"args": ["${workspaceFolder}", "test1-1"],
 			"isBackground": true,
@@ -54,6 +54,128 @@
 				}
 			],
 			"dependsOn": ["CMake: build"]
+		},
+		{
+			"type": "shell",
+			"label": "minic and qemu run arm64",
+			"command": "${workspaceFolder}/tools/arm64-build-gdb.sh",
+			"args": ["${workspaceFolder}", "test1-1"],
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": ".",
+							"file": 1,
+							"location": 2,
+							"message": 3
+						}
+					],
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "Now run gdb in another window.",
+						"endsPattern": "Now gdb start"
+					}
+				}
+			],
+			"dependsOn": ["CMake: build"]
+		},
+		{
+			"type": "shell",
+			"label": "minic and qemu run riscv64",
+			"command": "${workspaceFolder}/tools/riscv64-build-gdb.sh",
+			"args": ["${workspaceFolder}", "test1-1"],
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": ".",
+							"file": 1,
+							"location": 2,
+							"message": 3
+						}
+					],
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "Now run gdb in another window.",
+						"endsPattern": "Now gdb start"
+					}
+				}
+			],
+			"dependsOn": ["CMake: build"]
+		},
+		{
+			"type": "shell",
+			"label": "direct and qemu run arm32",
+			"command": "${workspaceFolder}/tools/arm32-direct-gdb.sh",
+			"args": ["${workspaceFolder}", "test1-1"],
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": ".",
+							"file": 1,
+							"location": 2,
+							"message": 3
+						}
+					],
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "Now run gdb in another window.",
+						"endsPattern": "Now gdb start"
+					}
+				}
+			]
+		},
+		{
+			"type": "shell",
+			"label": "direct and qemu run arm64",
+			"command": "${workspaceFolder}/tools/arm64-direct-gdb.sh",
+			"args": ["${workspaceFolder}", "test1-1"],
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": ".",
+							"file": 1,
+							"location": 2,
+							"message": 3
+						}
+					],
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "Now run gdb in another window.",
+						"endsPattern": "Now gdb start"
+					}
+				}
+			]
+		},
+		{
+			"type": "shell",
+			"label": "direct and qemu run riscv64",
+			"command": "${workspaceFolder}/tools/riscv64-direct-gdb.sh",
+			"args": ["${workspaceFolder}", "test1-1"],
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": ".",
+							"file": 1,
+							"location": 2,
+							"message": 3
+						}
+					],
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "Now run gdb in another window.",
+						"endsPattern": "Now gdb start"
+					}
+				}
+			]
 		}
 	]
 }
